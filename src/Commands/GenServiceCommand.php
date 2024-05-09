@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Juling\DevTools\Commands;
 
+use Juling\DevTools\Support\SchemaTrait;
 use think\console\Command;
 use think\console\Input;
 use think\console\Output;
