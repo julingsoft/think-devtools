@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace app\entity;
 
-use Juling\Foundation\Support\ArrayHelper;
+use Juling\Support\ArrayHelper;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(schema: '{$className}Entity')]
