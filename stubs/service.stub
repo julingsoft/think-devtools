@@ -1,0 +1,17 @@
+<?php
+
+declare(strict_types=1);
+
+namespace app\service;
+
+use app\repository\{$name}Repository;
+use Juling\Foundation\Contract\ServiceInterface;
+use Juling\Foundation\Service\CommonService;
+
+class {$name}Service extends CommonService implements ServiceInterface
+{
+    public function getRepository(): {$name}Repository
+    {
+        return {$name}Repository::getInstance();
+    }
+}
