@@ -1,0 +1,28 @@
+<?php
+
+declare(strict_types=1);
+
+namespace app\controller\request\{$camelName};
+
+use OpenApi\Attributes as OA;
+use think\Validate;
+
+#[OA\Schema(
+    schema: '{$name}UpdateRequest',
+    required: [
+{$dataSets[required]}
+    ],
+    properties: [
+{$dataSets[properties]}
+    ]
+)]
+class {$name}UpdateRequest extends Validate
+{
+    protected array $rule = [
+{$dataSets[rule]}
+    ];
+
+    protected array $message = [
+{$dataSets[message]}
+    ];
+}

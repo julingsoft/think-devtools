@@ -19,21 +19,19 @@ class GenModelCommand extends Command
     protected function configure(): void
     {
         $this->setName('gen:model')
-            ->setDescription('Generate model objects');
+            ->setDescription('Generate model class');
     }
 
     protected function execute(Input $input, Output $output): int
     {
-        $database = env('DB_DATABASE');
-        $tables = Db::query('show tables;');
-
+        $tables = $this->getTables();
         foreach ($tables as $row) {
             $tableName = implode('', $row);
             if (in_array($tableName, $this->ignoreTables)) {
                 continue;
             }
             $className = parse_name($tableName, 1);
-            $columns = $this->getTableInfo($database, $tableName);
+            $columns = $this->getTableInfo($tableName);
 
             $this->modelTpl($tableName, $className, $columns);
         }
@@ -47,16 +45,26 @@ class GenModelCommand extends Command
         $updatedTime = false;
         $softDelete = false;
 
+        $primaryKeyStr = '';
+        $primaryKey = $this->getPrimaryKeyType($columns);
+        if (! empty($primaryKey) && $primaryKey['Field'] !== 'id') {
+            $primaryKeyStr = "
+    /**
+     * 主键
+     */
+    protected \$pk = '{$primaryKey['Field']}';\n";
+        }
+
         $fieldStr = '';
         foreach ($columns as $column) {
             $fieldStr .= str_pad(' ', 8)."'{$column['Field']}',\n";
-            if ($column['Field'] === 'created') {
+            if ($column['Field'] === 'created_time') {
                 $createdTime = true;
             }
-            if ($column['Field'] === 'modified') {
+            if ($column['Field'] === 'updated_time') {
                 $updatedTime = true;
             }
-            if ($column['Field'] === 'deleted') {
+            if ($column['Field'] === 'deleted_time') {
                 $softDelete = true;
             }
         }
@@ -81,7 +89,7 @@ class GenModelCommand extends Command
      *
      * @var false|string
      */
-    protected \$createTime = 'created';\n";
+    protected \$createTime = 'created_time';\n";
         }
 
         if ($updatedTime) {
@@ -91,7 +99,7 @@ class GenModelCommand extends Command
      *
      * @var false|string
      */
-    protected \$updateTime = 'modified';\n";
+    protected \$updateTime = 'updated_time';\n";
         }
 
         $useSoftDelete = '';
@@ -101,20 +109,22 @@ class GenModelCommand extends Command
     /**
      * 软删除字段
      */
-    protected string \$deleteTime = 'deleted';\n";
+    protected string \$deleteTime = 'deleted_time';\n";
         }
 
-        $content = file_get_contents(dirname(__DIR__, 2).'/stubs/model.stub');
+        $content = file_get_contents(__DIR__.'/stubs/model/model.stub');
         $content = str_replace([
             '{$className}',
             '$tableName',
             '$useSoftDelete',
+            '$primaryKeyStr',
             '$timeText',
             '$fieldStr',
         ], [
             $className,
             $tableName,
             $useSoftDelete,
+            $primaryKeyStr,
             $timeText,
             $fieldStr,
         ], $content);

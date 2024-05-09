@@ -14,7 +14,7 @@ class GenInterfaceCommand extends Command
     protected function configure(): void
     {
         $this->setName('gen:interface')
-            ->setDescription('Generate typescript interface.');
+            ->setDescription('Generate typescript module');
     }
 
     protected function execute(Input $input, Output $output): int
@@ -179,7 +179,7 @@ export const {$service}Service = ({$requestParams}): Promise{$response} => {
                     }
                 }
             } elseif (isset($property['$ref'])) {
-                $type = 'I'.basename($property['$ref']).'[]';
+                $type = 'I'.basename($property['$ref']);
             } else {
                 exit($interface.' 对象 '.var_export($property, true).' 缺失类型');
             }

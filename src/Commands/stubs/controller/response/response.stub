@@ -1,0 +1,15 @@
+<?php
+
+declare(strict_types=1);
+
+namespace app\controller\response\{$camelName};
+
+use Juling\Support\ArrayHelper;
+use OpenApi\Attributes as OA;
+
+#[OA\Schema(schema: '{$name}Response')]
+class {$name}Response
+{
+    use ArrayHelper;
+{$fields}
+}

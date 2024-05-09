@@ -11,18 +11,23 @@ use think\facade\Db;
 
 class GenServiceCommand extends Command
 {
+    use SchemaTrait;
+
     private array $ignoreTables = ['migrations'];
 
     protected function configure(): void
     {
         $this->setName('gen:service')
-            ->setDescription('Generate service layer');
+            ->setDescription('Generate service class');
     }
 
     protected function execute(Input $input, Output $output): int
     {
-        $tables = Db::query('show tables;');
+        $this->ensureDirectoryExists([
+            app_path('service'),
+        ]);
 
+        $tables = $this->getTables();
         foreach ($tables as $row) {
             $tableName = implode('', $row);
 
@@ -31,6 +36,7 @@ class GenServiceCommand extends Command
             }
 
             $className = parse_name($tableName, 1);
+
             $this->serviceTpl($className);
         }
 
@@ -39,7 +45,7 @@ class GenServiceCommand extends Command
 
     private function serviceTpl(string $name): void
     {
-        $content = file_get_contents(dirname(__DIR__, 2).'/stubs/service.stub');
+        $content = file_get_contents(__DIR__.'/stubs/service.stub');
         $content = str_replace([
             '{$name}',
         ], [

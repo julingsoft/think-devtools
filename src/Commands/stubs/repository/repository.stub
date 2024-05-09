@@ -29,7 +29,7 @@ class {$name}Repository extends CurdRepository implements RepositoryInterface
     /**
      * 添加
      */
-    public function createByInput({$name}Entity $entity): int
+    public function createByInput({$name}Entity $entity): {$primaryKeyType}
     {
         return $this->create($entity->toArray());
     }
@@ -37,17 +37,17 @@ class {$name}Repository extends CurdRepository implements RepositoryInterface
     /**
      * 按照ID查询返回对象
      */
-    public function findOneByIdReturn{$name}Output(int $id): ?{$name}Entity
+    public function findOneByIdReturn{$name}Output({$primaryKeyType} $id): ?{$name}Entity
     {
         $data = $this->findOneById($id);
         if (empty($data)) {
             return null;
         }
 
-        $output = new {$name}Entity();
-        $output->setData($data);
+        $entity = new {$name}Entity();
+        $entity->setData($data);
 
-        return $output;
+        return $entity;
     }
 
     /**
@@ -60,10 +60,10 @@ class {$name}Repository extends CurdRepository implements RepositoryInterface
             return null;
         }
 
-        $output = new {$name}Entity();
-        $output->setData($data);
+        $entity = new {$name}Entity();
+        $entity->setData($data);
 
-        return $output;
+        return $entity;
     }
 
     /**
@@ -79,9 +79,9 @@ class {$name}Repository extends CurdRepository implements RepositoryInterface
         }
 
         foreach ($result as $key => $item) {
-            $output = new {$name}Entity();
-            $output->setData($item);
-            $result[$key] = $output;
+            $entity = new {$name}Entity();
+            $entity->setData($item);
+            $result[$key] = $entity;
         }
 
         return $result;
@@ -97,9 +97,9 @@ class {$name}Repository extends CurdRepository implements RepositoryInterface
         $result = $this->paginate($condition, $page, $pageSize);
 
         foreach ($result['data'] as $key => $item) {
-            $output = new {$name}Entity();
-            $output->setData($item);
-            $result['data'][$key] = $output;
+            $entity = new {$name}Entity();
+            $entity->setData($item);
+            $result['data'][$key] = $entity;
         }
 
         return $result;

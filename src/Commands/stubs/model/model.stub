@@ -13,6 +13,7 @@ class {$className}Model extends Model
      * 设置表
      */
     protected $name = '$tableName';
+$primaryKeyStr
 $timeText
     /**
      * 设置字段

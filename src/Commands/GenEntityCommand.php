@@ -24,16 +24,14 @@ class GenEntityCommand extends Command
 
     protected function execute(Input $input, Output $output): int
     {
-        $database = env('DB_DATABASE');
-        $tables = Db::query('show tables;');
-
+        $tables = $this->getTables();
         foreach ($tables as $row) {
             $tableName = implode('', $row);
             if (in_array($tableName, $this->ignoreTables)) {
                 continue;
             }
             $className = parse_name($tableName, 1);
-            $columns = $this->getTableInfo($database, $tableName);
+            $columns = $this->getTableInfo($tableName);
 
             $this->entityTpl($className, $columns);
         }
@@ -52,16 +50,16 @@ class GenEntityCommand extends Command
                 $column['Comment'] = 'ID';
             }
             $fields .= "    #[OA\Property(property: '{$column['Field']}', description: '{$column['Comment']}', type: '{$column['SwaggerType']}')]\n";
-            $fields .= '    private '.$column['BaseType'].' $'.parse_name($column['Field'], 1, false).";\n\n";
+            $fields .= '    private '.$column['BaseType'].' $'.$column['Field'].";\n\n";
         }
 
         foreach ($columns as $column) {
-            $fields .= $this->getSet(parse_name($column['Field'], 1, false), $column['BaseType'])."\n\n";
+            $fields .= $this->getSet($column['Field'], $column['BaseType'])."\n\n";
         }
 
         $fields = rtrim($fields, "\n");
 
-        $content = file_get_contents(dirname(__DIR__, 2).'/stubs/entity.stub');
+        $content = file_get_contents(__DIR__.'/stubs/entity.stub');
         $content = str_replace([
             '{$className}',
             '{$fields}',

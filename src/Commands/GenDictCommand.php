@@ -19,25 +19,24 @@ class GenDictCommand extends Command
     protected function configure(): void
     {
         $this->setName('gen:dict')
-            ->setDescription('Generate database dict.');
+            ->setDescription('Generate database dict');
     }
 
     protected function execute(Input $input, Output $output): int
     {
-        $database = env('DB_DATABASE');
-        $tables = Db::query('show tables;');
-
         $content = "# 数据字典\n\n";
+
+        $tables = $this->getTables();
         foreach ($tables as $row) {
             $tableName = implode('', $row);
             if (in_array($tableName, $this->ignoreTables)) {
                 continue;
             }
 
-            $tableInfo = Db::query("SELECT `TABLE_COMMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '$database' AND TABLE_NAME = '$tableName';");
-            $content .= "### {$tableInfo[0]['TABLE_COMMENT']}(`$tableName`)\n";
+            $tableComment = $this->getTableComment($tableName);
+            $content .= "### {$tableComment}(`$tableName`)\n";
 
-            $columns = $this->getTableInfo($database, $tableName);
+            $columns = $this->getTableInfo($tableName);
             $content .= $this->getContent($columns);
         }
 

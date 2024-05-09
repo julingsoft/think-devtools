@@ -4,14 +4,29 @@ declare(strict_types=1);
 
 namespace Juling\DevTools\Support;
 
-use think\facade\Db;
+use think\facade\Db as DB;
+use Illuminate\Filesystem\Filesystem;
 
 trait SchemaTrait
 {
-    protected function getTableInfo($database, $tableName): array
+    protected function getTables(): array
     {
-        $sql = "SELECT COLUMN_NAME,COLUMN_COMMENT FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = '$database' AND TABLE_NAME = '$tableName'";
-        $result = Db::query($sql);
+        return DB::query('show tables;');
+    }
+
+    protected function getTableComment($tableName): string
+    {
+        $database = env('DB_DATABASE');
+        $tableInfo = DB::query("SELECT `TABLE_COMMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '$database' AND TABLE_NAME = '$tableName';");
+
+        return $tableInfo[0]['TABLE_COMMENT'];
+    }
+
+    protected function getTableInfo($tableName): array
+    {
+        $database = env('DB_DATABASE');
+        $sql = "SELECT COLUMN_NAME,COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '$database' AND TABLE_NAME = '$tableName';";
+        $result = DB::query($sql);
 
         $comments = [];
         foreach ($result as $row) {
@@ -19,7 +34,7 @@ trait SchemaTrait
         }
 
         $sql = 'desc `'.$tableName.'`';
-        $result = Db::query($sql);
+        $result = DB::query($sql);
 
         $columns = [];
         foreach ($result as $row) {
@@ -30,6 +45,23 @@ trait SchemaTrait
         }
 
         return $columns;
+    }
+
+    protected function getPrimaryKeyType(array $columns): array
+    {
+        $primaryKey = [];
+
+        foreach ($columns as $column) {
+            if ($column['Key'] === 'PRI') {
+                $primaryKey = [
+                    'Field' => $column['Field'],
+                    'Type' => $this->getFieldType($column['Type']),
+                ];
+                break;
+            }
+        }
+
+        return $primaryKey;
     }
 
     protected function getFieldType($type): string
@@ -68,5 +100,25 @@ trait SchemaTrait
         \$this->$field = \${$field};
     }
 EOF;
+    }
+
+    protected function ensureDirectoryExists(array|string $dirs): void
+    {
+        $fs = new Filesystem();
+
+        if (is_string($dirs)) {
+            $dirs = [$dirs];
+        }
+
+        foreach ($dirs as $dir) {
+            $fs->ensureDirectoryExists($dir);
+        }
+    }
+
+    protected function deleteDirectories(string $directory): void
+    {
+        $fs = new Filesystem();
+
+        $fs->deleteDirectories($directory);
     }
 }
