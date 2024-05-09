@@ -46,7 +46,7 @@ class GenServiceCommand extends Command
 
     private function serviceTpl(string $name): void
     {
-        $content = file_get_contents(__DIR__.'/stubs/service.stub');
+        $content = file_get_contents(__DIR__.'/stubs/service/service.stub');
         $content = str_replace([
             '{$name}',
         ], [

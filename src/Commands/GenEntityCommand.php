@@ -59,7 +59,7 @@ class GenEntityCommand extends Command
 
         $fields = rtrim($fields, "\n");
 
-        $content = file_get_contents(__DIR__.'/stubs/entity.stub');
+        $content = file_get_contents(__DIR__.'/stubs/entity/entity.stub');
         $content = str_replace([
             '{$className}',
             '{$fields}',
