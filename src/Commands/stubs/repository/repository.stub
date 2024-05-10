@@ -29,7 +29,7 @@ class {$name}Repository extends CurdRepository implements RepositoryInterface
     /**
      * 添加
      */
-    public function createEntity({$name}Entity $entity): {$primaryKeyType}
+    public function createByEntity({$name}Entity $entity): {$primaryKeyType}
     {
         return $this->create($entity->toArray());
     }
