@@ -29,7 +29,7 @@ class {$name}Repository extends CurdRepository implements RepositoryInterface
     /**
      * 添加
      */
-    public function createByInput({$name}Entity $entity): {$primaryKeyType}
+    public function createEntity({$name}Entity $entity): {$primaryKeyType}
     {
         return $this->create($entity->toArray());
     }
@@ -37,7 +37,7 @@ class {$name}Repository extends CurdRepository implements RepositoryInterface
     /**
      * 按照ID查询返回对象
      */
-    public function findOneByIdReturn{$name}Output({$primaryKeyType} $id): ?{$name}Entity
+    public function findOneEntityById({$primaryKeyType} $id): ?{$name}Entity
     {
         $data = $this->findOneById($id);
         if (empty($data)) {
@@ -53,7 +53,7 @@ class {$name}Repository extends CurdRepository implements RepositoryInterface
     /**
      * 按照条件查询
      */
-    public function findOneByWhereReturn{$name}Output(array $condition): ?{$name}Entity
+    public function findOneEntity(array $condition): ?{$name}Entity
     {
         $data = $this->findOneByWhere($condition);
         if (empty($data)) {
@@ -71,7 +71,7 @@ class {$name}Repository extends CurdRepository implements RepositoryInterface
      *
      * @throws Exception
      */
-    public function findAllReturn{$name}Output(array $condition = []): array
+    public function findAllEntity(array $condition = []): array
     {
         $result = $this->findAll($condition);
         if (empty($result)) {
@@ -92,7 +92,7 @@ class {$name}Repository extends CurdRepository implements RepositoryInterface
      *
      * @throws Exception
      */
-    public function paginateReturn{$name}Output(array $condition, int $page, int $pageSize): array
+    public function paginateEntity(array $condition, int $page, int $pageSize): array
     {
         $result = $this->paginate($condition, $page, $pageSize);
 
