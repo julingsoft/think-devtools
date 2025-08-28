@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Juling\DevTools\Support;
 
 use think\facade\Db as DB;
-use Illuminate\Filesystem\Filesystem;
+use think\facade\Filesystem;
 
 trait SchemaTrait
 {
@@ -104,21 +104,17 @@ EOF;
 
     protected function ensureDirectoryExists(array|string $dirs): void
     {
-        $fs = new Filesystem();
-
         if (is_string($dirs)) {
             $dirs = [$dirs];
         }
 
         foreach ($dirs as $dir) {
-            $fs->ensureDirectoryExists($dir);
+            Filesystem::createDirectory($dir);
         }
     }
 
     protected function deleteDirectories(string $directory): void
     {
-        $fs = new Filesystem();
-
-        $fs->deleteDirectories($directory);
+        Filesystem::deleteDirectory($directory);
     }
 }
