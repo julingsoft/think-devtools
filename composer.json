@@ -3,7 +3,6 @@
     "license": "Apache-2.0",
     "require": {
         "php": "^8.4",
-        "illuminate/filesystem": "^12.26",
         "topthink/framework": "^8.1"
     },
     "require-dev": {
