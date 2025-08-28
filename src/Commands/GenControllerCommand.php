@@ -24,14 +24,14 @@ class GenControllerCommand extends Command
 
     protected function execute(Input $input, Output $output): int
     {
-        if (is_dir(app_path('controller'))) {
-            $this->deleteDirectories(app_path('controller'));
+        if (is_dir(app_path().'controller')) {
+            $this->deleteDirectories(app_path().'controller');
         }
 
         $this->ensureDirectoryExists([
-            app_path('controller'),
-            app_path('controller/request'),
-            app_path('controller/response'),
+            app_path().'controller',
+            app_path().'controller/request',
+            app_path().'controller/response',
         ]);
 
         $tables = $this->getTables();
@@ -70,12 +70,12 @@ class GenControllerCommand extends Command
             $name,
             $comment,
         ], $content);
-        file_put_contents(app_path('controller').$name.'Controller.php', $content);
+        file_put_contents(app_path().'controller/'.$name.'Controller.php', $content);
     }
 
     private function requestTpl(string $name, array $columns): void
     {
-        $dist = app_path('controller/request/'.Str::camel($name));
+        $dist = app_path().'controller/request/'.Str::camel($name);
         if (! is_dir($dist)) {
             $this->ensureDirectoryExists($dist);
         }
@@ -123,7 +123,7 @@ class GenControllerCommand extends Command
             $dataSets['rule'],
             $dataSets['message'],
         ], $content);
-        file_put_contents(app_path('controller/request/'.Str::camel($name)).$name.'CreateRequest.php', $content);
+        file_put_contents(app_path().'controller/request/'.Str::camel($name).'/'.$name.'CreateRequest.php', $content);
 
         $content = file_get_contents(__DIR__.'/stubs/controller/request/query.stub');
         $content = str_replace([
@@ -141,7 +141,7 @@ class GenControllerCommand extends Command
             '',
             '',
         ], $content);
-        file_put_contents(app_path('controller/request/'.Str::camel($name)).$name.'QueryRequest.php', $content);
+        file_put_contents(app_path().'controller/request/'.Str::camel($name).'/'.$name.'QueryRequest.php', $content);
 
         $content = file_get_contents(__DIR__.'/stubs/controller/request/update.stub');
         $content = str_replace([
@@ -159,12 +159,12 @@ class GenControllerCommand extends Command
             $dataSets['rule'],
             $dataSets['message'],
         ], $content);
-        file_put_contents(app_path('controller/request/'.Str::camel($name)).$name.'UpdateRequest.php', $content);
+        file_put_contents(app_path().'controller/request/'.Str::camel($name).'/'.$name.'UpdateRequest.php', $content);
     }
 
     private function responseTpl(string $name, array $columns): void
     {
-        $dist = app_path('controller/response/'.Str::camel($name));
+        $dist = app_path().'controller/response/'.Str::camel($name);
         if (! is_dir($dist)) {
             $this->ensureDirectoryExists($dist);
         }
@@ -177,7 +177,7 @@ class GenControllerCommand extends Command
             Str::camel($name),
             $name,
         ], $content);
-        file_put_contents(app_path('controller/response/'.Str::camel($name)).$name.'QueryResponse.php', $content);
+        file_put_contents(app_path().'controller/response/'.Str::camel($name).'/'.$name.'QueryResponse.php', $content);
 
         $ignoreFields = ['deleted_time', 'password', 'password_salt'];
 
@@ -217,6 +217,6 @@ class GenControllerCommand extends Command
             $name,
             $fields,
         ], $content);
-        file_put_contents(app_path('controller/response/'.Str::camel($name)).$name.'Response.php', $content);
+        file_put_contents(app_path().'controller/response/'.Str::camel($name).'/'.$name.'Response.php', $content);
     }
 }

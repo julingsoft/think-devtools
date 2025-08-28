@@ -109,7 +109,9 @@ EOF;
         }
 
         foreach ($dirs as $dir) {
-            Filesystem::createDirectory($dir);
+            if (! is_dir($dir)) {
+                Filesystem::createDirectory($dir);
+            }
         }
     }
 

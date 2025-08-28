@@ -19,14 +19,14 @@ class GenInterfaceCommand extends Command
 
     protected function execute(Input $input, Output $output): int
     {
-        $distDir = base_path('resource/js');
+        $distDir = base_path().'resource/js';
         foreach (['services', 'types'] as $d) {
             if (! is_dir($distDir.'/'.$d)) {
                 mkdir($distDir.'/'.$d, 0755, true);
             }
         }
 
-        $files = glob(public_path('docs/api').'*.json');
+        $files = glob(public_path().'docs/api/*.json');
         foreach ($files as $file) {
             $module = basename($file, '.json');
             $data = json_decode(file_get_contents($file), true);

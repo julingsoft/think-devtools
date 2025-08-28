@@ -54,6 +54,6 @@ class GenRepositoryCommand extends Command
             $name,
             $primaryKeyType,
         ], $content);
-        file_put_contents(app_path('repository').$name.'Repository.php', $content);
+        file_put_contents(app_path().'repository/'.$name.'Repository.php', $content);
     }
 }

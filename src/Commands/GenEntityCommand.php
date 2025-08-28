@@ -68,6 +68,6 @@ class GenEntityCommand extends Command
             $fields,
         ], $content);
 
-        file_put_contents(app_path('entity').$className.'Entity.php', $content);
+        file_put_contents(app_path().'entity/'.$className.'Entity.php', $content);
     }
 }

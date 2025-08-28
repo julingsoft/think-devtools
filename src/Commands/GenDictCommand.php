@@ -40,7 +40,7 @@ class GenDictCommand extends Command
             $content .= $this->getContent($columns);
         }
 
-        file_put_contents(public_path('docs').'dict.md', $content);
+        file_put_contents(public_path().'docs/dict.md', $content);
 
         return 1;
     }

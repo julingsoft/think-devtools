@@ -129,6 +129,6 @@ class GenModelCommand extends Command
             $fieldStr,
         ], $content);
 
-        file_put_contents(app_path('model').$className.'Model.php', $content);
+        file_put_contents(app_path().'model/'.$className.'Model.php', $content);
     }
 }

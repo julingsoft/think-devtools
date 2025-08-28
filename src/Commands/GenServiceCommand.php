@@ -25,7 +25,7 @@ class GenServiceCommand extends Command
     protected function execute(Input $input, Output $output): int
     {
         $this->ensureDirectoryExists([
-            app_path('service'),
+            app_path().'service',
         ]);
 
         $tables = $this->getTables();
@@ -52,7 +52,7 @@ class GenServiceCommand extends Command
         ], [
             $name,
         ], $content);
-        $serviceFile = app_path('service').$name.'Service.php';
+        $serviceFile = app_path().'service/'.$name.'Service.php';
         if (! file_exists($serviceFile)) {
             file_put_contents($serviceFile, $content);
         }
