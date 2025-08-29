@@ -47,6 +47,15 @@ trait SchemaTrait
         return $columns;
     }
 
+    private function getTableGroupName(string $tableName)
+    {
+        if (str_contains($tableName, '_')) {
+            $explode = explode('_', $tableName);
+            return $explode[0];
+        }
+        return $tableName;
+    }
+
     protected function getPrimaryKeyType(array $columns): array
     {
         $primaryKey = [];

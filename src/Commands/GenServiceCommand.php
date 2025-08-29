@@ -70,13 +70,4 @@ class GenServiceCommand extends Command
             file_put_contents($dist . '/' . $name . 'BundleService.php', "<?php\n\n" . $content);
         }
     }
-
-    private function getTableGroupName(string $tableName)
-    {
-        if (str_contains($tableName, '_')) {
-            $explode = explode('_', $tableName);
-            return $explode[0];
-        }
-        return $tableName;
-    }
 }

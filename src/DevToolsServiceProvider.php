@@ -16,6 +16,7 @@ class DevToolsServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->commands([
+            Commands\GenControllerCommand::class,
             Commands\GenDictCommand::class,
             Commands\GenEntityCommand::class,
             Commands\GenInterfaceCommand::class,

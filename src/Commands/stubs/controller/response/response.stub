@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace app\controller\response\{$camelName};
+namespace app\modules\admin\response\{$camelName};
 
-use Juling\Support\ArrayHelper;
+use Juling\Foundation\Support\ArrayHelper;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(schema: '{$name}Response')]

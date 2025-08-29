@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Juling\DevTools\Commands;
 
 use Juling\DevTools\Support\SchemaTrait;
-use Juling\Support\Str;
+use Juling\Foundation\Support\Str;
 use think\console\Command;
 use think\console\Input;
 use think\console\Output;
@@ -16,6 +16,8 @@ class GenControllerCommand extends Command
 
     private array $ignoreTables = ['migrations'];
 
+    private string $outDir;
+
     protected function configure(): void
     {
         $this->setName('gen:controller')
@@ -24,14 +26,11 @@ class GenControllerCommand extends Command
 
     protected function execute(Input $input, Output $output): int
     {
-        if (is_dir(app_path().'controller')) {
-            $this->deleteDirectories(app_path().'controller');
-        }
-
+        $this->outDir = app_path().'modules/admin/';
         $this->ensureDirectoryExists([
-            app_path().'controller',
-            app_path().'controller/request',
-            app_path().'controller/response',
+            $this->outDir.'controller',
+            $this->outDir.'request',
+            $this->outDir.'response',
         ]);
 
         $tables = $this->getTables();
@@ -50,7 +49,7 @@ class GenControllerCommand extends Command
             $comment .= '模块';
             $columns = $this->getTableInfo($tableName);
 
-            $this->controllerTpl($className, $comment);
+            $this->controllerTpl($className, $comment, $tableName);
             $this->requestTpl($className, $columns);
             $this->responseTpl($className, $columns);
         }
@@ -58,24 +57,27 @@ class GenControllerCommand extends Command
         return 1;
     }
 
-    private function controllerTpl(string $name, string $comment): void
+    private function controllerTpl(string $name, string $comment, string $tableName): void
     {
+        $groupName = $this->getTableGroupName($tableName);
         $content = file_get_contents(__DIR__.'/stubs/controller/controller.stub');
         $content = str_replace([
             '{$camelName}',
             '{$name}',
+            '{$groupName}',
             '{$comment}',
         ], [
             Str::camel($name),
             $name,
+            $groupName,
             $comment,
         ], $content);
-        file_put_contents(app_path().'controller/'.$name.'Controller.php', $content);
+        file_put_contents($this->outDir.'controller/'.$name.'Controller.php', $content);
     }
 
     private function requestTpl(string $name, array $columns): void
     {
-        $dist = app_path().'controller/request/'.Str::camel($name);
+        $dist = $this->outDir.'request/'.Str::camel($name);
         if (! is_dir($dist)) {
             $this->ensureDirectoryExists($dist);
         }
@@ -123,7 +125,7 @@ class GenControllerCommand extends Command
             $dataSets['rule'],
             $dataSets['message'],
         ], $content);
-        file_put_contents(app_path().'controller/request/'.Str::camel($name).'/'.$name.'CreateRequest.php', $content);
+        file_put_contents($this->outDir.'request/'.Str::camel($name).'/'.$name.'CreateRequest.php', $content);
 
         $content = file_get_contents(__DIR__.'/stubs/controller/request/query.stub');
         $content = str_replace([
@@ -141,7 +143,7 @@ class GenControllerCommand extends Command
             '',
             '',
         ], $content);
-        file_put_contents(app_path().'controller/request/'.Str::camel($name).'/'.$name.'QueryRequest.php', $content);
+        file_put_contents($this->outDir.'request/'.Str::camel($name).'/'.$name.'QueryRequest.php', $content);
 
         $content = file_get_contents(__DIR__.'/stubs/controller/request/update.stub');
         $content = str_replace([
@@ -159,12 +161,12 @@ class GenControllerCommand extends Command
             $dataSets['rule'],
             $dataSets['message'],
         ], $content);
-        file_put_contents(app_path().'controller/request/'.Str::camel($name).'/'.$name.'UpdateRequest.php', $content);
+        file_put_contents($this->outDir.'request/'.Str::camel($name).'/'.$name.'UpdateRequest.php', $content);
     }
 
     private function responseTpl(string $name, array $columns): void
     {
-        $dist = app_path().'controller/response/'.Str::camel($name);
+        $dist = $this->outDir.'response/'.Str::camel($name);
         if (! is_dir($dist)) {
             $this->ensureDirectoryExists($dist);
         }
@@ -177,7 +179,7 @@ class GenControllerCommand extends Command
             Str::camel($name),
             $name,
         ], $content);
-        file_put_contents(app_path().'controller/response/'.Str::camel($name).'/'.$name.'QueryResponse.php', $content);
+        file_put_contents($this->outDir.'response/'.Str::camel($name).'/'.$name.'QueryResponse.php', $content);
 
         $ignoreFields = ['deleted_time', 'password', 'password_salt'];
 
@@ -217,6 +219,6 @@ class GenControllerCommand extends Command
             $name,
             $fields,
         ], $content);
-        file_put_contents(app_path().'controller/response/'.Str::camel($name).'/'.$name.'Response.php', $content);
+        file_put_contents($this->outDir.'response/'.Str::camel($name).'/'.$name.'Response.php', $content);
     }
 }
