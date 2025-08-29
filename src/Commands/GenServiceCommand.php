@@ -8,7 +8,7 @@ use Juling\DevTools\Support\SchemaTrait;
 use think\console\Command;
 use think\console\Input;
 use think\console\Output;
-use think\facade\Db;
+use think\facade\View;
 
 class GenServiceCommand extends Command
 {
@@ -25,7 +25,7 @@ class GenServiceCommand extends Command
     protected function execute(Input $input, Output $output): int
     {
         $this->ensureDirectoryExists([
-            app_path().'service',
+            app_path() . 'service',
         ]);
 
         $tables = $this->getTables();
@@ -38,23 +38,45 @@ class GenServiceCommand extends Command
 
             $className = parse_name($tableName, 1);
 
-            $this->serviceTpl($className);
+            $this->serviceTpl($className, $tableName);
         }
 
         return 1;
     }
 
-    private function serviceTpl(string $name): void
+    private function serviceTpl(string $name, string $tableName): void
     {
-        $content = file_get_contents(__DIR__.'/stubs/service/service.stub');
+        $content = file_get_contents(__DIR__ . '/stubs/service/service.stub');
         $content = str_replace([
             '{$name}',
         ], [
             $name,
         ], $content);
-        $serviceFile = app_path().'service/'.$name.'Service.php';
-        if (! file_exists($serviceFile)) {
-            file_put_contents($serviceFile, $content);
+        $serviceFile = app_path() . 'service/' . $name . 'Service.php';
+        file_put_contents($serviceFile, $content);
+        $this->bundleService($name, $tableName);
+    }
+
+    private function bundleService(string $name, string $tableName): void
+    {
+        $data = ['name' => $name];
+        $data['groupName'] = $this->getTableGroupName($tableName);
+        $dist = app_path().'bundles/' . $data['groupName'] . '/service';
+        $this->ensureDirectoryExists($dist);
+
+        $tpl = file_get_contents(__DIR__ . '/stubs/service/bundle.stub');
+        $content = View::display($tpl, $data);
+        if (! file_exists($dist . '/' . $name . 'BundleService.php')) {
+            file_put_contents($dist . '/' . $name . 'BundleService.php', "<?php\n\n" . $content);
         }
+    }
+
+    private function getTableGroupName(string $tableName)
+    {
+        if (str_contains($tableName, '_')) {
+            $explode = explode('_', $tableName);
+            return $explode[0];
+        }
+        return $tableName;
     }
 }

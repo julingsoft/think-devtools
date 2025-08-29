@@ -1,0 +1,10 @@
+declare(strict_types=1);
+
+namespace app\bundles\{$groupName}\service;
+
+use app\service\{$name}Service;
+
+class {$name}BundleService extends {$name}Service
+{
+    //
+}

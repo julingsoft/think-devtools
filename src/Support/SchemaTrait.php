@@ -110,7 +110,7 @@ EOF;
 
         foreach ($dirs as $dir) {
             if (! is_dir($dir)) {
-                Filesystem::createDirectory($dir);
+                mkdir($dir, 0755, true);
             }
         }
     }
