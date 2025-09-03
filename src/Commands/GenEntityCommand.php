@@ -50,11 +50,11 @@ class GenEntityCommand extends Command
                 $column['Comment'] = 'ID';
             }
             $fields .= "    #[OA\Property(property: '{$column['Field']}', description: '{$column['Comment']}', type: '{$column['SwaggerType']}')]\n";
-            $fields .= '    private '.$column['BaseType'].' $'.$column['Field'].";\n\n";
+            $fields .= '    private '.$column['BaseType'].' $'.$column['CamelField'].";\n\n";
         }
 
         foreach ($columns as $column) {
-            $fields .= $this->getSet($column['Field'], $column['BaseType'])."\n\n";
+            $fields .= $this->getSet($column['CamelField'], $column['BaseType'])."\n\n";
         }
 
         $fields = rtrim($fields, "\n");

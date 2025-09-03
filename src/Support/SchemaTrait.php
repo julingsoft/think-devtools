@@ -38,6 +38,8 @@ trait SchemaTrait
 
         $columns = [];
         foreach ($result as $row) {
+            $row['StudlyField'] = parse_name($row['Field'], 1);
+            $row['CamelField'] = parse_name($row['Field'], 1, false);
             $row['Comment'] = $comments[$row['Field']];
             $row['BaseType'] = $this->getFieldType($row['Type']);
             $row['SwaggerType'] = $row['BaseType'] === 'int' ? 'integer' : $row['BaseType'];
