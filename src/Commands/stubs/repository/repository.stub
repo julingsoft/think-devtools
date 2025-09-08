@@ -45,7 +45,7 @@ class {$name}Repository extends CurdRepository implements RepositoryInterface
         }
 
         $entity = new {$name}Entity();
-        $entity->setData($data);
+        $entity->loadData($data);
 
         return $entity;
     }
@@ -61,7 +61,7 @@ class {$name}Repository extends CurdRepository implements RepositoryInterface
         }
 
         $entity = new {$name}Entity();
-        $entity->setData($data);
+        $entity->loadData($data);
 
         return $entity;
     }
@@ -80,7 +80,7 @@ class {$name}Repository extends CurdRepository implements RepositoryInterface
 
         foreach ($result as $key => $item) {
             $entity = new {$name}Entity();
-            $entity->setData($item);
+            $entity->loadData($item);
             $result[$key] = $entity;
         }
 
@@ -98,7 +98,7 @@ class {$name}Repository extends CurdRepository implements RepositoryInterface
 
         foreach ($result['data'] as $key => $item) {
             $entity = new {$name}Entity();
-            $entity->setData($item);
+            $entity->loadData($item);
             $result['data'][$key] = $entity;
         }
 
