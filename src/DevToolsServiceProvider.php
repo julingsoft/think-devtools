@@ -22,6 +22,7 @@ class DevToolsServiceProvider extends ServiceProvider
             Commands\GenInterfaceCommand::class,
             Commands\GenModelCommand::class,
             Commands\GenRepositoryCommand::class,
+            Commands\GenRouteCommand::class,
             Commands\GenServiceCommand::class,
         ]);
     }
