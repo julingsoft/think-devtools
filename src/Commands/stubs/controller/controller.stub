@@ -46,7 +46,7 @@ class {$name}Controller extends BaseController
 
             foreach ($result['data'] as $key => $item) {
                 $response = new {$name}Response();
-                $response->setData($item);
+                $response->loadData($item);
                 $result['data'][$key] = $response->toArray();
             }
 
@@ -77,7 +77,7 @@ class {$name}Controller extends BaseController
             }
 
             ${$camelName}Entity = new {$name}Entity();
-            ${$camelName}Entity->setData($request);
+            ${$camelName}Entity->loadData($request);
 
             ${$camelName}BundleService = new {$name}BundleService();
             $insertId = ${$camelName}BundleService->save(${$camelName}Entity->toArray());
@@ -121,7 +121,7 @@ class {$name}Controller extends BaseController
             }
 
             $response = new {$name}Response();
-            $response->setData(${$camelName});
+            $response->loadData(${$camelName});
 
             return $this->success($response->toArray());
         } catch (Throwable $e) {
@@ -156,7 +156,7 @@ class {$name}Controller extends BaseController
             }
 
             ${$camelName}Entity = new {$name}Entity();
-            ${$camelName}Entity->setData($request);
+            ${$camelName}Entity->loadData($request);
 
             ${$camelName}BundleService->update(${$camelName}Entity->toArray(), [
                 ['id', '=', $request['id']],
