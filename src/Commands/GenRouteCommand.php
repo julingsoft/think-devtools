@@ -43,6 +43,9 @@ class GenRouteCommand extends Command
             $routes = $this->getRoutes($files);
 
             if (!empty($routes)) {
+                if (!is_dir($modulePath . '/route')) {
+                    mkdir($modulePath . '/route', 0755, true);
+                }
                 $moduleName = basename($modulePath);
                 $this->genRoutes($moduleName, $routes, $modulePath . '/route.php');
             }
