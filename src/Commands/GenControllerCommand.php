@@ -10,6 +10,7 @@ use think\console\Command;
 use think\console\Input;
 use think\console\input\Argument;
 use think\console\Output;
+use think\facade\View;
 
 class GenControllerCommand extends Command
 {
@@ -42,7 +43,6 @@ class GenControllerCommand extends Command
         $tables = $this->getTables();
         foreach ($tables as $row) {
             $tableName = implode('', $row);
-
             if (in_array($tableName, $this->ignoreTables)) {
                 continue;
             }
@@ -63,22 +63,20 @@ class GenControllerCommand extends Command
         return 1;
     }
 
-    private function controllerTpl(string $name, string $comment, string $tableName): void
+    private function controllerTpl(string $className, string $comment, string $tableName): void
     {
         $groupName = $this->getTableGroupName($tableName);
-        $content = file_get_contents(__DIR__.'/stubs/controller/controller.stub');
-        $content = str_replace([
-            '{$camelName}',
-            '{$name}',
-            '{$groupName}',
-            '{$comment}',
-        ], [
-            Str::camel($name),
-            $name,
-            $groupName,
-            $comment,
-        ], $content);
-        file_put_contents($this->outDir.'controller/'.$name.'Controller.php', $content);
+
+        $data = [
+            'grouping' => $this->grouping,
+            'groupName' => $groupName,
+            'className' => $className,
+            'camelName' => Str::camel($className),
+            'comment' => $comment,
+        ];
+        $tpl = file_get_contents(__DIR__.'/stubs/controller/controller.stub');
+        $content = View::display($tpl, $data);
+        file_put_contents($this->outDir.'controller/'.$className.'Controller.php', '<?php'."\n\n".$content);
     }
 
     private function requestTpl(string $name, array $columns): void
@@ -89,9 +87,9 @@ class GenControllerCommand extends Command
         }
 
         $ignoreFields = [
-            'created_time',
-            'updated_time',
-            'deleted_time',
+            'create_time',
+            'update_time',
+            'delete_time',
         ];
 
         $dataSets = ['required' => '', 'properties' => '', 'rule' => '', 'message' => ''];
@@ -170,9 +168,10 @@ class GenControllerCommand extends Command
         file_put_contents($this->outDir.'request/'.Str::camel($name).'/'.$name.'UpdateRequest.php', $content);
     }
 
-    private function responseTpl(string $name, array $columns): void
+    private function responseTpl(string $className, array $columns): void
     {
-        $dist = $this->outDir.'response/'.Str::camel($name);
+        // 1、创建查询响应类
+        $dist = $this->outDir.'response/'.Str::camel($className);
         if (! is_dir($dist)) {
             $this->ensureDirectoryExists($dist);
         }
@@ -182,49 +181,33 @@ class GenControllerCommand extends Command
             '{$camelName}',
             '{$name}',
         ], [
-            Str::camel($name),
-            $name,
+            Str::camel($className),
+            $className,
         ], $content);
-        file_put_contents($this->outDir.'response/'.Str::camel($name).'/'.$name.'QueryResponse.php', $content);
+        file_put_contents($this->outDir.'response/'.Str::camel($className).'/'.$className.'QueryResponse.php', $content);
 
-        $ignoreFields = ['deleted_time', 'password', 'password_salt'];
-
-        $fields = "\n";
-        foreach ($columns as $column) {
+        // 2、创建响应类
+        $ignoreFields = ['delete_time', 'password', 'password_salt'];
+        foreach ($columns as $key => $column) {
             if (in_array($column['Field'], $ignoreFields)) {
                 continue;
             }
-
             if ($column['Field'] === 'default') {
                 $column['Field'] = 'isDefault';
             }
             if ($column['Field'] === 'id' && empty($column['Comment'])) {
                 $column['Comment'] = 'ID';
             }
-            $fields .= "    #[OA\Property(property: '{$column['Field']}', description: '{$column['Comment']}', type: '{$column['SwaggerType']}')]\n";
-            $fields .= '    private '.$column['BaseType'].' $'.parse_name($column['Field'], 1, false).";\n\n";
+            $columns[$key] = $column;
         }
 
-        foreach ($columns as $column) {
-            if (in_array($column['Field'], $ignoreFields)) {
-                continue;
-            }
-
-            $fields .= $this->getSet(parse_name($column['Field'], 1, false), $column['BaseType'])."\n\n";
-        }
-
-        $fields = rtrim($fields, "\n");
-
-        $content = file_get_contents(__DIR__.'/stubs/controller/response/response.stub');
-        $content = str_replace([
-            '{$camelName}',
-            '{$name}',
-            '{$fields}',
-        ], [
-            Str::camel($name),
-            $name,
-            $fields,
-        ], $content);
-        file_put_contents($this->outDir.'response/'.Str::camel($name).'/'.$name.'Response.php', $content);
+        $data = [
+            'className' => $className,
+            'camelName' => Str::camel($className),
+            'columns' => $columns,
+        ];
+        $tpl = file_get_contents(__DIR__.'/stubs/controller/response/response.stub');
+        $content = View::display($tpl, $data);
+        file_put_contents($this->outDir.'response/'.Str::camel($className).'/'.$className.'Response.php', '<?php'."\n\n".$content);
     }
 }

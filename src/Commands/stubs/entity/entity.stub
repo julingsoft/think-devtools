@@ -16,19 +16,19 @@ class {$className}Entity
 {foreach $columns as $key => $column}
 
     #[OA\Property(property: '{$column.Field}', description: '{$column.Comment}', type: '{$column.SwaggerType}')]
-    private {$column.BaseType} ${$column.CamelField};
+    private {$column.BaseType} ${$column.Field};
 {/foreach}
 {foreach $columns as $key => $column}
 
     public function get{$column.StudlyField}(): {$column.BaseType}
 
     {
-        return $this->{$column.CamelField};
+        return $this->{$column.Field};
     }
 
     public function set{$column.StudlyField}({$column.BaseType} ${$column.CamelField}): void
     {
-        $this->{$column.CamelField} = ${$column.CamelField};
+        $this->{$column.Field} = ${$column.CamelField};
     }
 {/foreach}
 }

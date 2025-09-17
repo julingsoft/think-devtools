@@ -1,5 +1,3 @@
-<?php
-
 declare(strict_types=1);
 
 namespace app\modules\admin\response\{$camelName};
@@ -7,9 +5,26 @@ namespace app\modules\admin\response\{$camelName};
 use Juling\Foundation\Support\ArrayHelper;
 use OpenApi\Attributes as OA;
 
-#[OA\Schema(schema: '{$name}Response')]
-class {$name}Response
+#[OA\Schema(schema: '{$className}Response')]
+class {$className}Response
 {
     use ArrayHelper;
-{$fields}
+{foreach $columns as $key => $column}
+
+    #[OA\Property(property: '{$column.CamelField}', description: '{$column.Comment}', type: '{$column.SwaggerType}')]
+    private {$column.BaseType} ${$column.CamelField};
+{/foreach}
+{foreach $columns as $key => $column}
+
+    public function get{$column.StudlyField}(): {$column.BaseType}
+
+    {
+        return $this->{$column.CamelField};
+    }
+
+    public function set{$column.StudlyField}({$column.BaseType} ${$column.CamelField}): void
+    {
+        $this->{$column.CamelField} = ${$column.CamelField};
+    }
+{/foreach}
 }

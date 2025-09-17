@@ -1,16 +1,19 @@
-<?php
-
 declare(strict_types=1);
 
 namespace app\modules\admin\controller;
 
-use app\bundles\{$groupName}\service\{$name}BundleService;
-use app\entity\{$name}Entity;
-use app\modules\admin\request\{$camelName}\{$name}CreateRequest;
-use app\modules\admin\request\{$camelName}\{$name}QueryRequest;
-use app\modules\admin\request\{$camelName}\{$name}UpdateRequest;
-use app\modules\admin\response\{$camelName}\{$name}QueryResponse;
-use app\modules\admin\response\{$camelName}\{$name}Response;
+{if $grouping}
+use app\bundles\{$groupName}\entity\{$className}Entity;
+use app\bundles\{$groupName}\service\{$className}BundleService;
+{else}
+use app\entity\{$className}Entity;
+use app\service\{$className}BundleService;
+{/if}
+use app\modules\admin\request\{$camelName}\{$className}CreateRequest;
+use app\modules\admin\request\{$camelName}\{$className}QueryRequest;
+use app\modules\admin\request\{$camelName}\{$className}UpdateRequest;
+use app\modules\admin\response\{$camelName}\{$className}QueryResponse;
+use app\modules\admin\response\{$camelName}\{$className}Response;
 use Juling\Foundation\Exception\CustomException;
 use OpenApi\Attributes as OA;
 use think\facade\Db as DB;
@@ -18,13 +21,13 @@ use think\facade\Log;
 use think\Response;
 use Throwable;
 
-class {$name}Controller extends BaseController
+class {$className}Controller extends BaseController
 {
     #[OA\Post(path: '/{$camelName}/query', summary: '查询列表接口', security: [['bearerAuth' => []]], tags: ['{$comment}'])]
     #[OA\Parameter(name: 'page', description: '当前页码', in: 'query', required: true, example: 1)]
     #[OA\Parameter(name: 'pageSize', description: '每页分页数', in: 'query', required: false, example: 10)]
-    #[OA\RequestBody(required: true, content: new OA\JsonContent(ref: {$name}QueryRequest::class))]
-    #[OA\Response(response: 200, description: 'OK', content: new OA\JsonContent(ref: {$name}QueryResponse::class))]
+    #[OA\RequestBody(required: true, content: new OA\JsonContent(ref: {$className}QueryRequest::class))]
+    #[OA\Response(response: 200, description: 'OK', content: new OA\JsonContent(ref: {$className}QueryResponse::class))]
     public function query(): Response
     {
         try {
@@ -32,7 +35,7 @@ class {$name}Controller extends BaseController
             $page = intval($this->request->param('page', 1));
             $pageSize = intval($this->request->param('pageSize', 10));
 
-            $v = new {$name}QueryRequest();
+            $v = new {$className}QueryRequest();
             if (! $v->check($request)) {
                 throw new CustomException($v->getError());
             }
@@ -41,11 +44,11 @@ class {$name}Controller extends BaseController
                 //
             ];
 
-            ${$camelName}BundleService = new {$name}BundleService();
+            ${$camelName}BundleService = new {$className}BundleService();
             $result = ${$camelName}BundleService->page($condition, $page, $pageSize);
 
             foreach ($result['data'] as $key => $item) {
-                $response = new {$name}Response();
+                $response = new {$className}Response();
                 $response->loadData($item);
                 $result['data'][$key] = $response->toArray();
             }
@@ -63,7 +66,7 @@ class {$name}Controller extends BaseController
     }
 
     #[OA\Post(path: '/{$camelName}/create', summary: '新增接口', security: [['bearerAuth' => []]], tags: ['{$comment}'])]
-    #[OA\RequestBody(required: true, content: new OA\JsonContent(ref: {$name}CreateRequest::class))]
+    #[OA\RequestBody(required: true, content: new OA\JsonContent(ref: {$className}CreateRequest::class))]
     #[OA\Response(response: 200, description: 'OK')]
     public function create(): Response
     {
@@ -71,15 +74,15 @@ class {$name}Controller extends BaseController
         try {
             $request = $this->request->get();
 
-            $v = new {$name}CreateRequest();
+            $v = new {$className}CreateRequest();
             if (! $v->check($request)) {
                 throw new CustomException($v->getError());
             }
 
-            ${$camelName}Entity = new {$name}Entity();
+            ${$camelName}Entity = new {$className}Entity();
             ${$camelName}Entity->loadData($request);
 
-            ${$camelName}BundleService = new {$name}BundleService();
+            ${$camelName}BundleService = new {$className}BundleService();
             $insertId = ${$camelName}BundleService->save(${$camelName}Entity->toArray());
             if ($insertId > 0) {
                 DB::commit();
@@ -103,7 +106,7 @@ class {$name}Controller extends BaseController
 
     #[OA\Get(path: '/{$camelName}/show', summary: '获取详情接口', security: [['bearerAuth' => []]], tags: ['{$comment}'])]
     #[OA\Parameter(name: 'id', description: 'ID', in: 'query', required: true, example: 1)]
-    #[OA\Response(response: 200, description: 'OK', content: new OA\JsonContent(ref: {$name}Response::class))]
+    #[OA\Response(response: 200, description: 'OK', content: new OA\JsonContent(ref: {$className}Response::class))]
     public function show(): Response
     {
         try {
@@ -113,14 +116,14 @@ class {$name}Controller extends BaseController
                 ['id', '=', $id],
             ];
 
-            ${$camelName}BundleService = new {$name}BundleService();
+            ${$camelName}BundleService = new {$className}BundleService();
             ${$camelName} = ${$camelName}BundleService->getOne($condition);
 
             if (empty(${$camelName})) {
                 throw new CustomException('数据不存在或状态异常');
             }
 
-            $response = new {$name}Response();
+            $response = new {$className}Response();
             $response->loadData(${$camelName});
 
             return $this->success($response->toArray());
@@ -136,7 +139,7 @@ class {$name}Controller extends BaseController
     }
 
     #[OA\Put(path: '/{$camelName}/update', summary: '更新接口', security: [['bearerAuth' => []]], tags: ['{$comment}'])]
-    #[OA\RequestBody(required: true, content: new OA\JsonContent(ref: {$name}UpdateRequest::class))]
+    #[OA\RequestBody(required: true, content: new OA\JsonContent(ref: {$className}UpdateRequest::class))]
     #[OA\Response(response: 200, description: 'OK')]
     public function update(): Response
     {
@@ -144,18 +147,18 @@ class {$name}Controller extends BaseController
         try {
             $request = $this->request->get();
 
-            $v = new {$name}UpdateRequest();
+            $v = new {$className}UpdateRequest();
             if (! $v->check($request)) {
                 throw new CustomException($v->getError());
             }
 
-            ${$camelName}BundleService = new {$name}BundleService();
+            ${$camelName}BundleService = new {$className}BundleService();
             ${$camelName} = ${$camelName}BundleService->getById($request['id']);
             if (empty(${$camelName})) {
                 throw new CustomException('数据不存在或状态异常');
             }
 
-            ${$camelName}Entity = new {$name}Entity();
+            ${$camelName}Entity = new {$className}Entity();
             ${$camelName}Entity->loadData($request);
 
             ${$camelName}BundleService->update(${$camelName}Entity->toArray(), [
@@ -191,7 +194,7 @@ class {$name}Controller extends BaseController
                 ['id', '=', $id],
             ];
 
-            ${$camelName}BundleService = new {$name}BundleService();
+            ${$camelName}BundleService = new {$className}BundleService();
             if (${$camelName}BundleService->remove($condition)) {
                 DB::commit();
 
