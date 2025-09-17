@@ -1,26 +1,34 @@
-<?php
-
 declare(strict_types=1);
 
+{if $grouping}
+namespace app\bundles\{$groupName}\repository;
+{else}
 namespace app\repository;
+{/if}
 
-use app\entity\{$name}Entity;
+{if $grouping}
+
+use app\bundles\{$groupName}\entity\{$className}Entity;
+{else}
+
+use app\entity\{$className}Entity;
+{/if}
 use Exception;
 use Juling\Foundation\Contract\RepositoryInterface;
 use Juling\Foundation\Repository\CurdRepository;
 use think\Model;
 
-class {$name}Repository extends CurdRepository implements RepositoryInterface
+class {$className}Repository extends CurdRepository implements RepositoryInterface
 {
-    private static ?{$name}Repository $instance = null;
+    private static ?{$className}Repository $instance = null;
 
     /**
      * 单例
      */
-    public static function getInstance(): {$name}Repository
+    public static function getInstance(): {$className}Repository
     {
         if (is_null(self::$instance)) {
-            self::$instance = new {$name}Repository();
+            self::$instance = new {$className}Repository();
         }
 
         return self::$instance;
@@ -29,7 +37,7 @@ class {$name}Repository extends CurdRepository implements RepositoryInterface
     /**
      * 添加
      */
-    public function createByEntity({$name}Entity $entity): {$primaryKeyType}
+    public function createByEntity({$className}Entity $entity): {$primaryKeyType}
     {
         return $this->create($entity->toArray());
     }
@@ -37,14 +45,14 @@ class {$name}Repository extends CurdRepository implements RepositoryInterface
     /**
      * 按照ID查询返回对象
      */
-    public function findOneEntityById({$primaryKeyType} $id): ?{$name}Entity
+    public function findOneEntityById({$primaryKeyType} $id): ?{$className}Entity
     {
         $data = $this->findOneById($id);
         if (empty($data)) {
             return null;
         }
 
-        $entity = new {$name}Entity();
+        $entity = new {$className}Entity();
         $entity->loadData($data);
 
         return $entity;
@@ -53,14 +61,14 @@ class {$name}Repository extends CurdRepository implements RepositoryInterface
     /**
      * 按照条件查询
      */
-    public function findOneEntity(array $condition): ?{$name}Entity
+    public function findOneEntity(array $condition): ?{$className}Entity
     {
         $data = $this->findOneByWhere($condition);
         if (empty($data)) {
             return null;
         }
 
-        $entity = new {$name}Entity();
+        $entity = new {$className}Entity();
         $entity->loadData($data);
 
         return $entity;
@@ -79,7 +87,7 @@ class {$name}Repository extends CurdRepository implements RepositoryInterface
         }
 
         foreach ($result as $key => $item) {
-            $entity = new {$name}Entity();
+            $entity = new {$className}Entity();
             $entity->loadData($item);
             $result[$key] = $entity;
         }
@@ -97,7 +105,7 @@ class {$name}Repository extends CurdRepository implements RepositoryInterface
         $result = $this->paginate($condition, $page, $pageSize);
 
         foreach ($result['data'] as $key => $item) {
-            $entity = new {$name}Entity();
+            $entity = new {$className}Entity();
             $entity->loadData($item);
             $result['data'][$key] = $entity;
         }
@@ -108,10 +116,15 @@ class {$name}Repository extends CurdRepository implements RepositoryInterface
     /**
      * 定义数据数据模型类
      */
-    public function model(string $modelName = '{$name}'): Model
+    public function model(string $modelName = '{$className}'): Model
     {
+{if $grouping}
+        $model = '\\app\\bundles\\{$groupName}\\model\\'.$modelName.'Model';
+
+{else}
         $model = '\\app\\model\\'.$modelName.'Model';
 
+{/if}
         return new $model();
     }
 }

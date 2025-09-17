@@ -53,8 +53,10 @@ trait SchemaTrait
     {
         if (str_contains($tableName, '_')) {
             $explode = explode('_', $tableName);
+
             return $explode[0];
         }
+
         return $tableName;
     }
 
@@ -94,23 +96,6 @@ trait SchemaTrait
         }
 
         return $type;
-    }
-
-    protected function getSet($field, $type): string
-    {
-        $capitalName = parse_name($field, 1);
-
-        return <<<EOF
-    public function get{$capitalName}(): $type
-    {
-        return \$this->$field;
-    }
-
-    public function set{$capitalName}($type \${$field}): void
-    {
-        \$this->$field = \${$field};
-    }
-EOF;
     }
 
     protected function ensureDirectoryExists(array|string $dirs): void

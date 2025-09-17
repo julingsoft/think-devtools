@@ -1,24 +1,68 @@
-<?php
-
 declare(strict_types=1);
 
+{if $grouping}
+namespace app\bundles\{$groupName}\model;
+{else}
 namespace app\model;
+{/if}
 
 use think\Model;
+{if $softDelete}
 use think\model\concern\SoftDelete;
+{/if}
 
 class {$className}Model extends Model
-{$useSoftDelete
+{
+{if $softDelete}
+    use SoftDelete;
+
+{/if}
     /**
      * 设置表
      */
-    protected $name = '$tableName';
-$primaryKeyStr
-$timeText
+    protected $name = '{$tableName}';
+{if $primaryKey != 'id'}
+
+    /**
+     * 主键
+     */
+    protected string $pk = '{$primaryKey}';
+{/if}
+{if $createdTime || $updatedTime || $softDelete}
+
+    /**
+     * 是否需要自动写入时间戳 如果设置为字符串 则表示时间字段的类型.
+     */
+    protected string $autoWriteTimestamp = 'datetime';
+{/if}
+{if $createdTime}
+
+    /**
+     * 创建时间字段 false表示关闭.
+     */
+    protected string $createTime = 'created_time';
+{/if}
+{if $updatedTime}
+
+    /**
+     * 更新时间字段 false表示关闭.
+     */
+    protected string $updateTime = 'updated_time';
+{/if}
+{if $softDelete}
+
+    /**
+     * 软删除字段
+     */
+    protected string $deleteTime = 'deleted_time';
+{/if}
+
     /**
      * 设置字段
      */
-    protected $field = [
-$fieldStr
+    protected array $field = [
+{foreach $columns as $key => $column}
+        '{$column.Field}',
+{/foreach}
     ];
 }

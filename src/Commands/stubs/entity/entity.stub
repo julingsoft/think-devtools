@@ -1,8 +1,10 @@
-<?php
-
 declare(strict_types=1);
 
+{if $grouping}
+namespace app\bundles\{$groupName}\entity;
+{else}
 namespace app\entity;
+{/if}
 
 use Juling\Foundation\Support\ArrayHelper;
 use OpenApi\Attributes as OA;
@@ -11,5 +13,22 @@ use OpenApi\Attributes as OA;
 class {$className}Entity
 {
     use ArrayHelper;
-{$fields}
+{foreach $columns as $key => $column}
+
+    #[OA\Property(property: '{$column.Field}', description: '{$column.Comment}', type: '{$column.SwaggerType}')]
+    private {$column.BaseType} ${$column.CamelField};
+{/foreach}
+{foreach $columns as $key => $column}
+
+    public function get{$column.StudlyField}(): {$column.BaseType}
+
+    {
+        return $this->{$column.CamelField};
+    }
+
+    public function set{$column.StudlyField}({$column.BaseType} ${$column.CamelField}): void
+    {
+        $this->{$column.CamelField} = ${$column.CamelField};
+    }
+{/foreach}
 }

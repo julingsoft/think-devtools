@@ -25,8 +25,8 @@ class GenRouteCommand extends Command
     protected function execute(Input $input, Output $output): void
     {
         $modules = array_merge(
-            glob(app_path() . 'api/*', GLOB_ONLYDIR),
-            glob(app_path() . 'modules/*', GLOB_ONLYDIR)
+            glob(app_path().'api/*', GLOB_ONLYDIR),
+            glob(app_path().'modules/*', GLOB_ONLYDIR)
         );
 
         foreach ($modules as $modulePath) {
@@ -38,17 +38,17 @@ class GenRouteCommand extends Command
 
     private function genModuleRoute(string $modulePath): void
     {
-        $files = glob($modulePath . '/controller/*.php');
-        if (!empty($files)) {
+        $files = glob($modulePath.'/controller/*.php');
+        if (! empty($files)) {
             $routes = $this->getRoutes($files);
 
-            if (!empty($routes)) {
-                $routePath = $modulePath . '/route'; 
-                if (!is_dir($routePath)) {
+            if (! empty($routes)) {
+                $routePath = $modulePath.'/route';
+                if (! is_dir($routePath)) {
                     mkdir($routePath, 0755, true);
                 }
                 $moduleName = basename($modulePath);
-                $this->genRoutes($moduleName, $routes, $routePath . '/route.php');
+                $this->genRoutes($moduleName, $routes, $routePath.'/route.php');
             }
         }
     }

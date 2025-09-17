@@ -8,7 +8,6 @@ use Juling\DevTools\Support\SchemaTrait;
 use think\console\Command;
 use think\console\Input;
 use think\console\Output;
-use think\facade\Db;
 
 class GenDictCommand extends Command
 {
