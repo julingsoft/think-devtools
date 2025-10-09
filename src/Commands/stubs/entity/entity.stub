@@ -7,15 +7,12 @@ namespace app\entity;
 {/if}
 
 use Juling\Foundation\Support\ArrayHelper;
-use OpenApi\Attributes as OA;
 
-#[OA\Schema(schema: '{$className}Entity')]
 class {$className}Entity
 {
     use ArrayHelper;
 {foreach $columns as $key => $column}
 
-    #[OA\Property(property: '{$column.Field}', description: '{$column.Comment}', type: '{$column.SwaggerType}')]
     private {$column.BaseType} ${$column.Field};
 {/foreach}
 {foreach $columns as $key => $column}
