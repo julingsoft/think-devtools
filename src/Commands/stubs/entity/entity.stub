@@ -13,19 +13,24 @@ class {$className}Entity
     use ArrayHelper;
 {foreach $columns as $key => $column}
 
-    private {$column.BaseType} ${$column.Field};
+    const string get{$column.StudlyField} = '{$column.Field}'; // {$column.Comment}
+
+{/foreach}
+{foreach $columns as $key => $column}
+
+    private {$column.BaseType} ${$column.CamelField};
 {/foreach}
 {foreach $columns as $key => $column}
 
     public function get{$column.StudlyField}(): {$column.BaseType}
 
     {
-        return $this->{$column.Field};
+        return $this->{$column.CamelField};
     }
 
     public function set{$column.StudlyField}({$column.BaseType} ${$column.CamelField}): void
     {
-        $this->{$column.Field} = ${$column.CamelField};
+        $this->{$column.CamelField} = ${$column.CamelField};
     }
 {/foreach}
 }
