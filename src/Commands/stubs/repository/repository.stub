@@ -28,7 +28,7 @@ class {$className}Repository extends CurdRepository implements RepositoryInterfa
     public static function getInstance(): {$className}Repository
     {
         if (is_null(self::$instance)) {
-            self::$instance = new {$className}Repository();
+            self::$instance = new {$className}Repository;
         }
 
         return self::$instance;
@@ -38,6 +38,7 @@ class {$className}Repository extends CurdRepository implements RepositoryInterfa
      * 添加
      */
     public function createByEntity({$className}Entity $entity): {$primaryKeyType}
+
     {
         return $this->create($entity->toEntity());
     }
@@ -52,7 +53,7 @@ class {$className}Repository extends CurdRepository implements RepositoryInterfa
             return null;
         }
 
-        $entity = new {$className}Entity();
+        $entity = new {$className}Entity;
         $entity->loadData($data);
 
         return $entity;
@@ -68,7 +69,7 @@ class {$className}Repository extends CurdRepository implements RepositoryInterfa
             return null;
         }
 
-        $entity = new {$className}Entity();
+        $entity = new {$className}Entity;
         $entity->loadData($data);
 
         return $entity;
@@ -87,7 +88,7 @@ class {$className}Repository extends CurdRepository implements RepositoryInterfa
         }
 
         foreach ($result as $key => $item) {
-            $entity = new {$className}Entity();
+            $entity = new {$className}Entity;
             $entity->loadData($item);
             $result[$key] = $entity;
         }
@@ -105,7 +106,7 @@ class {$className}Repository extends CurdRepository implements RepositoryInterfa
         $result = $this->paginate($condition, $page, $pageSize);
 
         foreach ($result['data'] as $key => $item) {
-            $entity = new {$className}Entity();
+            $entity = new {$className}Entity;
             $entity->loadData($item);
             $result['data'][$key] = $entity;
         }
@@ -125,6 +126,6 @@ class {$className}Repository extends CurdRepository implements RepositoryInterfa
         $model = '\\app\\model\\'.$modelName.'Model';
 
 {/if}
-        return new $model();
+        return new $model;
     }
 }

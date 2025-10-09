@@ -35,7 +35,7 @@ class {$className}Controller extends BaseController
             $page = intval($this->request->param('page', 1));
             $pageSize = intval($this->request->param('pageSize', 10));
 
-            $v = new {$className}QueryRequest();
+            $v = new {$className}QueryRequest;
             if (! $v->check($request)) {
                 throw new CustomException($v->getError());
             }
@@ -44,11 +44,11 @@ class {$className}Controller extends BaseController
                 //
             ];
 
-            ${$camelName}BundleService = new {$className}BundleService();
+            ${$camelName}BundleService = new {$className}BundleService;
             $result = ${$camelName}BundleService->page($condition, $page, $pageSize);
 
             foreach ($result['data'] as $key => $item) {
-                $response = new {$className}Response();
+                $response = new {$className}Response;
                 $response->loadData($item);
                 $result['data'][$key] = $response->toArray();
             }
@@ -74,15 +74,15 @@ class {$className}Controller extends BaseController
         try {
             $request = $this->request->get();
 
-            $v = new {$className}CreateRequest();
+            $v = new {$className}CreateRequest;
             if (! $v->check($request)) {
                 throw new CustomException($v->getError());
             }
 
-            ${$camelName}Entity = new {$className}Entity();
+            ${$camelName}Entity = new {$className}Entity;
             ${$camelName}Entity->loadData($request);
 
-            ${$camelName}BundleService = new {$className}BundleService();
+            ${$camelName}BundleService = new {$className}BundleService;
             $insertId = ${$camelName}BundleService->save(${$camelName}Entity->toEntity());
             if ($insertId > 0) {
                 DB::commit();
@@ -116,14 +116,14 @@ class {$className}Controller extends BaseController
                 ['id', '=', $id],
             ];
 
-            ${$camelName}BundleService = new {$className}BundleService();
+            ${$camelName}BundleService = new {$className}BundleService;
             ${$camelName} = ${$camelName}BundleService->getOne($condition);
 
             if (empty(${$camelName})) {
                 throw new CustomException('数据不存在或状态异常');
             }
 
-            $response = new {$className}Response();
+            $response = new {$className}Response;
             $response->loadData(${$camelName});
 
             return $this->success($response->toArray());
@@ -147,18 +147,18 @@ class {$className}Controller extends BaseController
         try {
             $request = $this->request->get();
 
-            $v = new {$className}UpdateRequest();
+            $v = new {$className}UpdateRequest;
             if (! $v->check($request)) {
                 throw new CustomException($v->getError());
             }
 
-            ${$camelName}BundleService = new {$className}BundleService();
+            ${$camelName}BundleService = new {$className}BundleService;
             ${$camelName} = ${$camelName}BundleService->getById($request['id']);
             if (empty(${$camelName})) {
                 throw new CustomException('数据不存在或状态异常');
             }
 
-            ${$camelName}Entity = new {$className}Entity();
+            ${$camelName}Entity = new {$className}Entity;
             ${$camelName}Entity->loadData($request);
 
             ${$camelName}BundleService->update(${$camelName}Entity->toEntity(), [
@@ -194,7 +194,7 @@ class {$className}Controller extends BaseController
                 ['id', '=', $id],
             ];
 
-            ${$camelName}BundleService = new {$className}BundleService();
+            ${$camelName}BundleService = new {$className}BundleService;
             if (${$camelName}BundleService->remove($condition)) {
                 DB::commit();
 
