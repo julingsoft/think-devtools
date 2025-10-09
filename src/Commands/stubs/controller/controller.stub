@@ -83,7 +83,7 @@ class {$className}Controller extends BaseController
             ${$camelName}Entity->loadData($request);
 
             ${$camelName}BundleService = new {$className}BundleService();
-            $insertId = ${$camelName}BundleService->save(${$camelName}Entity->toArray());
+            $insertId = ${$camelName}BundleService->save(${$camelName}Entity->toEntity());
             if ($insertId > 0) {
                 DB::commit();
 
@@ -161,7 +161,7 @@ class {$className}Controller extends BaseController
             ${$camelName}Entity = new {$className}Entity();
             ${$camelName}Entity->loadData($request);
 
-            ${$camelName}BundleService->update(${$camelName}Entity->toArray(), [
+            ${$camelName}BundleService->update(${$camelName}Entity->toEntity(), [
                 ['id', '=', $request['id']],
             ]);
 

@@ -39,7 +39,7 @@ class {$className}Repository extends CurdRepository implements RepositoryInterfa
      */
     public function createByEntity({$className}Entity $entity): {$primaryKeyType}
     {
-        return $this->create($entity->toArray());
+        return $this->create($entity->toEntity());
     }
 
     /**
