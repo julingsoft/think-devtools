@@ -1,8 +1,10 @@
-<?php
-
 declare(strict_types=1);
 
+{if $grouping}
+namespace app\bundles\{$groupName}\response\{$camelName};
+{else}
 namespace app\modules\admin\response\{$camelName};
+{/if}
 
 use Juling\Foundation\Support\ArrayHelper;
 use OpenApi\Attributes as OA;

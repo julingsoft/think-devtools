@@ -26,6 +26,7 @@ class GenRouteCommand extends Command
     {
         $modules = array_merge(
             glob(app_path().'api/*', GLOB_ONLYDIR),
+            glob(app_path().'bundles/*', GLOB_ONLYDIR),
             glob(app_path().'modules/*', GLOB_ONLYDIR)
         );
 

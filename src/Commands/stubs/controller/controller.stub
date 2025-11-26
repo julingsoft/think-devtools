@@ -1,19 +1,29 @@
 declare(strict_types=1);
 
+{if $grouping}
+namespace app\bundles\{$groupName}\controller;
+{else}
 namespace app\modules\admin\controller;
+{/if}
 
+use app\modules\admin\controller\BaseController;
 {if $grouping}
 use app\bundles\{$groupName}\entity\{$className}Entity;
 use app\bundles\{$groupName}\service\{$className}BundleService;
+use app\bundles\{$groupName}\request\{$camelName}\{$className}CreateRequest;
+use app\bundles\{$groupName}\request\{$camelName}\{$className}QueryRequest;
+use app\bundles\{$groupName}\request\{$camelName}\{$className}UpdateRequest;
+use app\bundles\{$groupName}\response\{$camelName}\{$className}QueryResponse;
+use app\bundles\{$groupName}\response\{$camelName}\{$className}Response;
 {else}
 use app\entity\{$className}Entity;
 use app\service\{$className}BundleService;
-{/if}
 use app\modules\admin\request\{$camelName}\{$className}CreateRequest;
 use app\modules\admin\request\{$camelName}\{$className}QueryRequest;
 use app\modules\admin\request\{$camelName}\{$className}UpdateRequest;
 use app\modules\admin\response\{$camelName}\{$className}QueryResponse;
 use app\modules\admin\response\{$camelName}\{$className}Response;
+{/if}
 use Juling\Foundation\Exception\CustomException;
 use OpenApi\Attributes as OA;
 use think\facade\Db as DB;

@@ -1,8 +1,10 @@
-<?php
-
 declare(strict_types=1);
 
+{if $grouping}
+namespace app\bundles\{$groupName}\request\{$camelName};
+{else}
 namespace app\modules\admin\request\{$camelName};
+{/if}
 
 use OpenApi\Attributes as OA;
 use think\Validate;
@@ -10,19 +12,23 @@ use think\Validate;
 #[OA\Schema(
     schema: '{$name}QueryRequest',
     required: [
-{$dataSets[required]}
+{$dataSets.required|raw}
+
     ],
     properties: [
-{$dataSets[properties]}
+{$dataSets.properties|raw}
+
     ]
 )]
 class {$name}QueryRequest extends Validate
 {
     protected $rule = [
-{$dataSets[rule]}
+{$dataSets.rule|raw}
+
     ];
 
     protected $message = [
-{$dataSets[message]}
+{$dataSets.message|raw}
+
     ];
 }

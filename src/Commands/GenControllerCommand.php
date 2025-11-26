@@ -33,19 +33,20 @@ class GenControllerCommand extends Command
     {
         $this->grouping = boolval($input->getArgument('grouping'));
 
-        $this->outDir = app_path().'modules/admin/';
-        $this->ensureDirectoryExists([
-            $this->outDir.'controller',
-            $this->outDir.'request',
-            $this->outDir.'response',
-        ]);
-
         $tables = $this->getTables();
         foreach ($tables as $row) {
             $tableName = implode('', $row);
             if (in_array($tableName, $this->ignoreTables)) {
                 continue;
             }
+
+            $groupName = $this->getTableGroupName($tableName);
+            $this->outDir = $this->grouping ? app_path('bundles/'.$groupName) : app_path('modules/admin');
+            $this->ensureDirectoryExists([
+                $this->outDir.'controller',
+                $this->outDir.'request',
+                $this->outDir.'response',
+            ]);
 
             $className = parse_name($tableName, 1);
             $comment = $this->getTableComment($tableName);
@@ -56,8 +57,8 @@ class GenControllerCommand extends Command
             $columns = $this->getTableInfo($tableName);
 
             $this->controllerTpl($className, $comment, $tableName);
-            $this->requestTpl($className, $columns);
-            $this->responseTpl($className, $columns);
+            $this->requestTpl($className, $columns, $tableName);
+            $this->responseTpl($className, $columns, $tableName);
         }
 
         return 1;
@@ -79,8 +80,10 @@ class GenControllerCommand extends Command
         file_put_contents($this->outDir.'controller/'.$className.'Controller.php', '<?php'."\n\n".$content);
     }
 
-    private function requestTpl(string $name, array $columns): void
+    private function requestTpl(string $name, array $columns, string $tableName): void
     {
+        $groupName = $this->getTableGroupName($tableName);
+
         $dist = $this->outDir.'request/'.Str::camel($name);
         if (! is_dir($dist)) {
             $this->ensureDirectoryExists($dist);
@@ -113,78 +116,74 @@ class GenControllerCommand extends Command
             return rtrim($item, "\n");
         }, $dataSets);
 
-        $content = file_get_contents(__DIR__.'/stubs/controller/request/create.stub');
-        $content = str_replace([
-            '{$camelName}',
-            '{$name}',
-            '{$dataSets[required]}',
-            '{$dataSets[properties]}',
-            '{$dataSets[rule]}',
-            '{$dataSets[message]}',
-        ], [
-            Str::camel($name),
-            $name,
-            $dataSets['required'],
-            $dataSets['properties'],
-            $dataSets['rule'],
-            $dataSets['message'],
-        ], $content);
-        file_put_contents($this->outDir.'request/'.Str::camel($name).'/'.$name.'CreateRequest.php', $content);
+        $data = [
+            'grouping' => $this->grouping,
+            'groupName' => $groupName,
+            'camelName' => Str::camel($name),
+            'name' => $name,
+            'dataSets' => [
+                'required' => $dataSets['required'],
+                'properties' => $dataSets['properties'],
+                'rule' => $dataSets['rule'],
+                'message' => $dataSets['message'],
+            ],
+        ];
+        $tpl = file_get_contents(__DIR__.'/stubs/controller/request/create.stub');
+        $content = View::display($tpl, $data);
+        file_put_contents($this->outDir.'request/'.Str::camel($name).'/'.$name.'CreateRequest.php', '<?php'."\n\n".$content);
 
-        $content = file_get_contents(__DIR__.'/stubs/controller/request/query.stub');
-        $content = str_replace([
-            '{$camelName}',
-            '{$name}',
-            '{$dataSets[required]}',
-            '{$dataSets[properties]}',
-            '{$dataSets[rule]}',
-            '{$dataSets[message]}',
-        ], [
-            Str::camel($name),
-            $name,
-            '',
-            '',
-            '',
-            '',
-        ], $content);
-        file_put_contents($this->outDir.'request/'.Str::camel($name).'/'.$name.'QueryRequest.php', $content);
+        $data = [
+            'grouping' => $this->grouping,
+            'groupName' => $groupName,
+            'camelName' => Str::camel($name),
+            'name' => $name,
+            'dataSets' => [
+                'required' => '',
+                'properties' => '',
+                'rule' => '',
+                'message' => '',
+            ],
+        ];
+        $tpl = file_get_contents(__DIR__.'/stubs/controller/request/query.stub');
+        $content = View::display($tpl, $data);
+        file_put_contents($this->outDir.'request/'.Str::camel($name).'/'.$name.'QueryRequest.php', '<?php'."\n\n".$content);
 
-        $content = file_get_contents(__DIR__.'/stubs/controller/request/update.stub');
-        $content = str_replace([
-            '{$camelName}',
-            '{$name}',
-            '{$dataSets[required]}',
-            '{$dataSets[properties]}',
-            '{$dataSets[rule]}',
-            '{$dataSets[message]}',
-        ], [
-            Str::camel($name),
-            $name,
-            $dataSets['required'],
-            $dataSets['properties'],
-            $dataSets['rule'],
-            $dataSets['message'],
-        ], $content);
-        file_put_contents($this->outDir.'request/'.Str::camel($name).'/'.$name.'UpdateRequest.php', $content);
+        $data = [
+            'grouping' => $this->grouping,
+            'groupName' => $groupName,
+            'camelName' => Str::camel($name),
+            'name' => $name,
+            'dataSets' => [
+                'required' => $dataSets['required'],
+                'properties' => $dataSets['properties'],
+                'rule' => $dataSets['rule'],
+                'message' => $dataSets['message'],
+            ],
+        ];
+        $tpl = file_get_contents(__DIR__.'/stubs/controller/request/update.stub');
+        $content = View::display($tpl, $data);
+        file_put_contents($this->outDir.'request/'.Str::camel($name).'/'.$name.'UpdateRequest.php', '<?php'."\n\n".$content);
     }
 
-    private function responseTpl(string $className, array $columns): void
+    private function responseTpl(string $className, array $columns, string $tableName): void
     {
+        $groupName = $this->getTableGroupName($tableName);
+
         // 1、创建查询响应类
         $dist = $this->outDir.'response/'.Str::camel($className);
         if (! is_dir($dist)) {
             $this->ensureDirectoryExists($dist);
         }
 
-        $content = file_get_contents(__DIR__.'/stubs/controller/response/query.stub');
-        $content = str_replace([
-            '{$camelName}',
-            '{$name}',
-        ], [
-            Str::camel($className),
-            $className,
-        ], $content);
-        file_put_contents($this->outDir.'response/'.Str::camel($className).'/'.$className.'QueryResponse.php', $content);
+        $data = [
+            'grouping' => $this->grouping,
+            'groupName' => $groupName,
+            'camelName' => Str::camel($className),
+            'name' => $className,
+        ];
+        $tpl = file_get_contents(__DIR__.'/stubs/controller/response/query.stub');
+        $content = View::display($tpl, $data);
+        file_put_contents($this->outDir.'response/'.Str::camel($className).'/'.$className.'QueryResponse.php', '<?php'."\n\n".$content);
 
         // 2、创建响应类
         $ignoreFields = ['delete_time', 'password', 'password_salt'];
@@ -202,6 +201,8 @@ class GenControllerCommand extends Command
         }
 
         $data = [
+            'grouping' => $this->grouping,
+            'groupName' => $groupName,
             'className' => $className,
             'camelName' => Str::camel($className),
             'columns' => $columns,
