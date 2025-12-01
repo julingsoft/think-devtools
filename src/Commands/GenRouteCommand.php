@@ -81,7 +81,7 @@ class GenRouteCommand extends Command
 
     private function genRoutes(string $moduleName, array $routes, string $routeFile): void
     {
-        $routeContent = "Route::group('$moduleName', function() {\n";
+        $routeContent = "Route::group('$moduleName', function () {\n";
         foreach ($routes as $route) {
             $routeContent .= sprintf("    Route::%s('%s', '%s@%s');\n", $route['httpMethod'], $route['path'], $route['controller'], $route['action']);
         }
