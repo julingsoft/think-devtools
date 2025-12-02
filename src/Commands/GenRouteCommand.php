@@ -87,9 +87,10 @@ class GenRouteCommand extends Command
         }
         $routeContent = "Route::group({$prefix}function () {\n";
         foreach ($routes as $route) {
-            $routeContent .= sprintf("    Route::%s('%s', '%s@%s');\n", $route['httpMethod'], $route['path'], $route['controller'], $route['action']);
+            $route['controller'] = '\\'.$route['namespace'].'\\'.$route['controller'];
+            $routeContent .= sprintf("    Route::%s('%s', [%s::class, '%s']);\n", $route['httpMethod'], $route['path'], $route['controller'], $route['action']);
         }
-        $routeContent .= "})->namespace('".$routes[0]['namespace']."');";
+        $routeContent .= "});";
 
         $content = $this->getTemplate($routeContent);
         file_put_contents($routeFile, $content);
