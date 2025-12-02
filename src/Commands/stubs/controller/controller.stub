@@ -6,7 +6,7 @@ namespace app\bundles\{$groupName}\controller;
 namespace app\modules\admin\controller;
 {/if}
 
-use app\modules\admin\controller\BaseController;
+use app\api\admin\controller\BaseController;
 {if $grouping}
 use app\bundles\{$groupName}\entity\{$className}Entity;
 use app\bundles\{$groupName}\service\{$className}BundleService;
