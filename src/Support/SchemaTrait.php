@@ -16,7 +16,7 @@ trait SchemaTrait
 
     protected function getTableComment($tableName): string
     {
-        $database = env('DB_DATABASE');
+        $database = env('DB_DATABASE', env('DB_NAME', ''));
         $tableInfo = DB::query("SELECT `TABLE_COMMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '$database' AND TABLE_NAME = '$tableName';");
 
         return $tableInfo[0]['TABLE_COMMENT'];
@@ -24,7 +24,7 @@ trait SchemaTrait
 
     protected function getTableInfo($tableName): array
     {
-        $database = env('DB_DATABASE');
+        $database = env('DB_DATABASE', env('DB_NAME', ''));
         $sql = "SELECT COLUMN_NAME,COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '$database' AND TABLE_NAME = '$tableName';";
         $result = DB::query($sql);
 
