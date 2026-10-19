@@ -33,7 +33,7 @@ class GenModelCommand extends Command
         $tables = $this->getTables();
         foreach ($tables as $row) {
             $tableName = implode('', $row);
-            if (in_array($tableName, $this->ignoreTables)) {
+            if (in_array($tableName, $this->ignoreTables) || $this->isPivotTable($tableName)) {
                 continue;
             }
             $columns = $this->getTableInfo($tableName);
@@ -46,7 +46,7 @@ class GenModelCommand extends Command
     private function modelTpl($tableName, $columns): void
     {
         $groupName = $this->getTableGroupName($tableName);
-        $className = parse_name($tableName, 1);
+        $className = $this->getTableClassName($tableName);
 
         $primaryKeyStr = 'id';
         $primaryKey = $this->getPrimaryKeyType($columns);
@@ -84,7 +84,7 @@ class GenModelCommand extends Command
         $tpl = file_get_contents(__DIR__.'/stubs/model/model.stub');
         $content = View::display($tpl, $data);
 
-        $dist = $this->grouping ? app_path('bundles/'.$groupName.'/model') : app_path('model');
+        $dist = $this->grouping ? app_path('domain/'.$groupName.'/model') : app_path('model');
         $this->ensureDirectoryExists($dist);
         file_put_contents($dist.'/'.$className.'Model.php', '<?php'."\n\n".$content);
     }

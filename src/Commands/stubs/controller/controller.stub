@@ -1,23 +1,23 @@
 declare(strict_types=1);
 
 {if $grouping}
-namespace app\bundles\{$groupName}\controller;
+namespace app\domain\{$groupName}\controller;
 {else}
 namespace app\modules\admin\controller;
 {/if}
 
 use app\api\admin\controller\BaseController;
 {if $grouping}
-use app\bundles\{$groupName}\entity\{$className}Entity;
-use app\bundles\{$groupName}\service\{$className}BundleService;
-use app\bundles\{$groupName}\request\{$camelName}\{$className}CreateRequest;
-use app\bundles\{$groupName}\request\{$camelName}\{$className}QueryRequest;
-use app\bundles\{$groupName}\request\{$camelName}\{$className}UpdateRequest;
-use app\bundles\{$groupName}\response\{$camelName}\{$className}QueryResponse;
-use app\bundles\{$groupName}\response\{$camelName}\{$className}Response;
+use app\domain\{$groupName}\entity\{$className}Entity;
+use app\domain\{$groupName}\service\{$className}Service;
+use app\domain\{$groupName}\request\{$camelName}\{$className}CreateRequest;
+use app\domain\{$groupName}\request\{$camelName}\{$className}QueryRequest;
+use app\domain\{$groupName}\request\{$camelName}\{$className}UpdateRequest;
+use app\domain\{$groupName}\response\{$camelName}\{$className}QueryResponse;
+use app\domain\{$groupName}\response\{$camelName}\{$className}Response;
 {else}
 use app\entity\{$className}Entity;
-use app\service\{$className}BundleService;
+use app\service\{$className}Service;
 use app\modules\admin\request\{$camelName}\{$className}CreateRequest;
 use app\modules\admin\request\{$camelName}\{$className}QueryRequest;
 use app\modules\admin\request\{$camelName}\{$className}UpdateRequest;
@@ -54,8 +54,8 @@ class {$className}Controller extends BaseController
                 //
             ];
 
-            ${$camelName}BundleService = new {$className}BundleService;
-            $result = ${$camelName}BundleService->page($condition, $page, $pageSize);
+            ${$camelName}Service = new {$className}Service;
+            $result = ${$camelName}Service->page($condition, $page, $pageSize);
 
             foreach ($result['data'] as $key => $item) {
                 $response = new {$className}Response;
@@ -92,8 +92,8 @@ class {$className}Controller extends BaseController
             ${$camelName}Entity = new {$className}Entity;
             ${$camelName}Entity->loadData($request);
 
-            ${$camelName}BundleService = new {$className}BundleService;
-            $insertId = ${$camelName}BundleService->save(${$camelName}Entity->toEntity());
+            ${$camelName}Service = new {$className}Service;
+            $insertId = ${$camelName}Service->save(${$camelName}Entity->toEntity());
             if ($insertId > 0) {
                 DB::commit();
 
@@ -126,8 +126,8 @@ class {$className}Controller extends BaseController
                 ['id', '=', $id],
             ];
 
-            ${$camelName}BundleService = new {$className}BundleService;
-            ${$camelName} = ${$camelName}BundleService->getOne($condition);
+            ${$camelName}Service = new {$className}Service;
+            ${$camelName} = ${$camelName}Service->getOne($condition);
 
             if (empty(${$camelName})) {
                 throw new CustomException('数据不存在或状态异常');
@@ -162,8 +162,8 @@ class {$className}Controller extends BaseController
                 throw new CustomException($v->getError());
             }
 
-            ${$camelName}BundleService = new {$className}BundleService;
-            ${$camelName} = ${$camelName}BundleService->getById($request['id']);
+            ${$camelName}Service = new {$className}Service;
+            ${$camelName} = ${$camelName}Service->getById($request['id']);
             if (empty(${$camelName})) {
                 throw new CustomException('数据不存在或状态异常');
             }
@@ -171,7 +171,7 @@ class {$className}Controller extends BaseController
             ${$camelName}Entity = new {$className}Entity;
             ${$camelName}Entity->loadData($request);
 
-            ${$camelName}BundleService->update(${$camelName}Entity->toEntity(), [
+            ${$camelName}Service->update(${$camelName}Entity->toEntity(), [
                 ['id', '=', $request['id']],
             ]);
 
@@ -204,8 +204,8 @@ class {$className}Controller extends BaseController
                 ['id', '=', $id],
             ];
 
-            ${$camelName}BundleService = new {$className}BundleService;
-            if (${$camelName}BundleService->remove($condition)) {
+            ${$camelName}Service = new {$className}Service;
+            if (${$camelName}Service->remove($condition)) {
                 DB::commit();
 
                 return $this->success('删除数据成功');

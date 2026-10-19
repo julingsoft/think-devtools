@@ -36,19 +36,19 @@ class GenControllerCommand extends Command
         $tables = $this->getTables();
         foreach ($tables as $row) {
             $tableName = implode('', $row);
-            if (in_array($tableName, $this->ignoreTables)) {
+            if (in_array($tableName, $this->ignoreTables) || $this->isPivotTable($tableName)) {
                 continue;
             }
 
             $groupName = $this->getTableGroupName($tableName);
-            $this->outDir = $this->grouping ? app_path('bundles/'.$groupName) : app_path('modules/admin');
+            $this->outDir = $this->grouping ? app_path('domain/'.$groupName) : app_path('modules/admin');
             $this->ensureDirectoryExists([
                 $this->outDir.'controller',
                 $this->outDir.'request',
                 $this->outDir.'response',
             ]);
 
-            $className = parse_name($tableName, 1);
+            $className = $this->getTableClassName($tableName);
             $comment = $this->getTableComment($tableName);
             if (Str::endsWith($comment, '表')) {
                 $comment = Str::substr($comment, 0, -1);

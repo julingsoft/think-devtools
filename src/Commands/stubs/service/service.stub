@@ -1,14 +1,14 @@
 declare(strict_types=1);
 
 {if $grouping}
-namespace app\bundles\{$groupName}\service;
+namespace app\domain\{$groupName}\service;
 {else}
 namespace app\service;
 {/if}
 
 {if $grouping}
 
-use app\bundles\{$groupName}\repository\{$className}Repository;
+use app\domain\{$groupName}\repository\{$className}Repository;
 {else}
 
 use app\repository\{$className}Repository;
@@ -16,7 +16,7 @@ use app\repository\{$className}Repository;
 use Juling\Foundation\Contract\ServiceInterface;
 use Juling\Foundation\Service\CommonService;
 
-class {$className}BundleService extends CommonService implements ServiceInterface
+class {$className}Service extends CommonService implements ServiceInterface
 {
     public function getRepository(): {$className}Repository
     {

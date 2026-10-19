@@ -33,7 +33,7 @@ class GenServiceCommand extends Command
         $tables = $this->getTables();
         foreach ($tables as $row) {
             $tableName = implode('', $row);
-            if (in_array($tableName, $this->ignoreTables)) {
+            if (in_array($tableName, $this->ignoreTables) || $this->isPivotTable($tableName)) {
                 continue;
             }
             $this->serviceTpl($tableName);
@@ -45,7 +45,7 @@ class GenServiceCommand extends Command
     private function serviceTpl(string $tableName): void
     {
         $groupName = $this->getTableGroupName($tableName);
-        $className = parse_name($tableName, 1);
+        $className = $this->getTableClassName($tableName);
 
         $data = [
             'grouping' => $this->grouping,
@@ -55,8 +55,8 @@ class GenServiceCommand extends Command
         $tpl = file_get_contents(__DIR__.'/stubs/service/service.stub');
         $content = View::display($tpl, $data);
 
-        $dist = $this->grouping ? app_path('bundles/'.$groupName.'/service') : app_path('service');
+        $dist = $this->grouping ? app_path('domain/'.$groupName.'/service') : app_path('service');
         $this->ensureDirectoryExists($dist);
-        file_put_contents($dist.'/'.$className.'BundleService.php', '<?php'."\n\n".$content);
+        file_put_contents($dist.'/'.$className.'Service.php', '<?php'."\n\n".$content);
     }
 }

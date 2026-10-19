@@ -1,7 +1,7 @@
 declare(strict_types=1);
 
 {if $grouping}
-namespace app\bundles\{$groupName}\model;
+namespace app\domain\{$groupName}\model;
 {else}
 namespace app\model;
 {/if}

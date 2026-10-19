@@ -26,7 +26,7 @@ class GenRouteCommand extends Command
     {
         $modules = array_merge(
             glob(app_path().'api/*', GLOB_ONLYDIR),
-            glob(app_path().'bundles/*', GLOB_ONLYDIR),
+            glob(app_path().'domain/*', GLOB_ONLYDIR),
             glob(app_path().'modules/*', GLOB_ONLYDIR)
         );
 
@@ -49,7 +49,7 @@ class GenRouteCommand extends Command
                     mkdir($routePath, 0755, true);
                 }
                 $moduleName = basename($modulePath);
-                $this->genRoutes($moduleName, $routes, $routePath.'/route.php');
+                $this->genRoutes($moduleName, $routes, $routePath.'/route.gen.php');
             }
         }
     }
@@ -82,7 +82,7 @@ class GenRouteCommand extends Command
     private function genRoutes(string $moduleName, array $routes, string $routeFile): void
     {
         $prefix = '';
-        if (stripos($routeFile, 'bundles') === false) {
+        if (stripos($routeFile, 'domain') === false) {
             $prefix = "'$moduleName', ";
         }
         $routeContent = "Route::group({$prefix}function () {\n";
@@ -90,7 +90,7 @@ class GenRouteCommand extends Command
             $route['controller'] = '\\'.$route['namespace'].'\\'.$route['controller'];
             $routeContent .= sprintf("    Route::%s('%s', [%s::class, '%s']);\n", $route['httpMethod'], $route['path'], $route['controller'], $route['action']);
         }
-        $routeContent .= "});";
+        $routeContent .= '});';
 
         $content = $this->getTemplate($routeContent);
         file_put_contents($routeFile, $content);

@@ -1,14 +1,14 @@
 declare(strict_types=1);
 
 {if $grouping}
-namespace app\bundles\{$groupName}\repository;
+namespace app\domain\{$groupName}\repository;
 {else}
 namespace app\repository;
 {/if}
 
 {if $grouping}
 
-use app\bundles\{$groupName}\entity\{$className}Entity;
+use app\domain\{$groupName}\entity\{$className}Entity;
 {else}
 
 use app\entity\{$className}Entity;
@@ -120,7 +120,7 @@ class {$className}Repository extends CurdRepository implements RepositoryInterfa
     public function model(string $modelName = '{$className}'): Model
     {
 {if $grouping}
-        $model = '\\app\\bundles\\{$groupName}\\model\\'.$modelName.'Model';
+        $model = '\\app\\domain\\{$groupName}\\model\\'.$modelName.'Model';
 
 {else}
         $model = '\\app\\model\\'.$modelName.'Model';

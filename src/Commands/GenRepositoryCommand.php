@@ -33,7 +33,7 @@ class GenRepositoryCommand extends Command
         $tables = $this->getTables();
         foreach ($tables as $row) {
             $tableName = implode('', $row);
-            if (in_array($tableName, $this->ignoreTables)) {
+            if (in_array($tableName, $this->ignoreTables) || $this->isPivotTable($tableName)) {
                 continue;
             }
             $columns = $this->getTableInfo($tableName);
@@ -47,7 +47,7 @@ class GenRepositoryCommand extends Command
     private function repositoryTpl(string $tableName, array $primaryKey): void
     {
         $groupName = $this->getTableGroupName($tableName);
-        $className = parse_name($tableName, 1);
+        $className = $this->getTableClassName($tableName);
         $primaryKeyType = empty($primaryKey) ? 'int' : $primaryKey['Type'];
 
         $data = [
@@ -59,7 +59,7 @@ class GenRepositoryCommand extends Command
         $tpl = file_get_contents(__DIR__.'/stubs/repository/repository.stub');
         $content = View::display($tpl, $data);
 
-        $dist = $this->grouping ? app_path('bundles/'.$groupName.'/repository') : app_path('repository');
+        $dist = $this->grouping ? app_path('domain/'.$groupName.'/repository') : app_path('repository');
         $this->ensureDirectoryExists($dist);
         file_put_contents($dist.'/'.$className.'Repository.php', '<?php'."\n\n".$content);
     }

@@ -57,7 +57,85 @@ trait SchemaTrait
             return $explode[0];
         }
 
-        return $tableName;
+        return $this->singular($tableName);
+    }
+
+    /**
+     * 表名转单数类名：users -> User, admin_roles -> AdminRole
+     */
+    protected function getTableClassName(string $tableName): string
+    {
+        return parse_name($this->singular($tableName), 1);
+    }
+
+    /**
+     * 英文复数转单数（常见规则 + 不规则词表）
+     */
+    private function singular(string $name): string
+    {
+        $irregular = [
+            'children' => 'child',
+            'men' => 'man',
+            'women' => 'woman',
+            'people' => 'person',
+            'teeth' => 'tooth',
+            'feet' => 'foot',
+            'geese' => 'goose',
+            'mice' => 'mouse',
+        ];
+
+        $lower = strtolower($name);
+        if (isset($irregular[$lower])) {
+            return $irregular[$lower];
+        }
+
+        if (str_ends_with($lower, 'ies') && strlen($lower) > 4) {
+            return substr($name, 0, -3).'y';
+        }
+
+        // boxes/dishes/buses/statuses -> box/dish/bus/status
+        if (preg_match('/(s|x|z|ch|sh)es$/', $lower)) {
+            return substr($name, 0, -2);
+        }
+
+        // users/orders -> user/order（以 ss 结尾的单词本身是单数）
+        if (str_ends_with($lower, 's') && ! str_ends_with($lower, 'ss')) {
+            return substr($name, 0, -1);
+        }
+
+        return $name;
+    }
+
+    /**
+     * 中间关联表：联合主键，且除时间戳外全部为 *_id/*_type 字段
+     * 如 admin_role_permissions、user_followers、content_article_tags
+     */
+    protected function isPivotTable(string $tableName): bool
+    {
+        $result = DB::query('SHOW COLUMNS FROM `'.$tableName.'`');
+
+        $pkCount = 0;
+        foreach ($result as $col) {
+            if ($col['Key'] === 'PRI') {
+                $pkCount++;
+            }
+        }
+        if ($pkCount < 2) {
+            return false;
+        }
+
+        $timeFields = ['create_time', 'update_time', 'delete_time'];
+        foreach ($result as $col) {
+            $field = $col['Field'];
+            if (in_array($field, $timeFields, true)) {
+                continue;
+            }
+            if (! preg_match('/_(id|type)$/', $field)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     protected function getPrimaryKeyType(array $columns): array

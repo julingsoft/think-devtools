@@ -1,7 +1,7 @@
 declare(strict_types=1);
 
 {if $grouping}
-namespace app\bundles\{$groupName}\request\{$camelName};
+namespace app\domain\{$groupName}\request\{$camelName};
 {else}
 namespace app\modules\admin\request\{$camelName};
 {/if}

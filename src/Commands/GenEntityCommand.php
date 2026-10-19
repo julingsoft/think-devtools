@@ -33,7 +33,7 @@ class GenEntityCommand extends Command
         $tables = $this->getTables();
         foreach ($tables as $row) {
             $tableName = implode('', $row);
-            if (in_array($tableName, $this->ignoreTables)) {
+            if (in_array($tableName, $this->ignoreTables) || $this->isPivotTable($tableName)) {
                 continue;
             }
             $columns = $this->getTableInfo($tableName);
@@ -46,7 +46,7 @@ class GenEntityCommand extends Command
     private function entityTpl($tableName, $columns): void
     {
         $groupName = $this->getTableGroupName($tableName);
-        $className = parse_name($tableName, 1);
+        $className = $this->getTableClassName($tableName);
 
         foreach ($columns as $key => $column) {
             if ($column['Field'] === 'default') {
@@ -67,7 +67,7 @@ class GenEntityCommand extends Command
         $tpl = file_get_contents(__DIR__.'/stubs/entity/entity.stub');
         $content = View::display($tpl, $data);
 
-        $dist = $this->grouping ? app_path('bundles/'.$groupName.'/entity') : app_path('entity');
+        $dist = $this->grouping ? app_path('domain/'.$groupName.'/entity') : app_path('entity');
         $this->ensureDirectoryExists($dist);
         file_put_contents($dist.'/'.$className.'Entity.php', '<?php'."\n\n".$content);
     }
